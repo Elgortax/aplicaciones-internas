@@ -1,7 +1,7 @@
 # Terreno Ops
 
 **Siete demos de software para la operación inmobiliaria y la coordinación de oficina.**  
-Portafolio de Alexis Rodríguez Riquelme · Ingeniería en Informática.
+**Creador de las aplicaciones originales y de Terreno Ops: Alexis Rodríguez Riquelme**, Analista TI en Grupo Tierras de Chile e ingeniero en informática.
 
 ![Terreno Ops · Operación inmobiliaria](portada.png)
 
@@ -31,7 +31,7 @@ Las aplicaciones comparten un menú. Puedes probarlas en cualquier orden. Los ej
 
 ## Sobre el proyecto
 
-Desarrollé estas demostraciones a partir de problemas que abordo en mi trabajo en el sector inmobiliario. Esta edición está pensada para que cualquier persona pueda recorrer los flujos, cambiar un dato y ver su efecto. Los nombres de predios, importes, equipos y operaciones son de ejemplo.
+Creé las aplicaciones de gestión de cartera, evaluación de loteos, Nexo Tierra, seguimiento de proyectos, tareas, reservas de sala y gestión de oficina para resolver necesidades que encontré en mi trabajo. Desarrollé Terreno Ops para que cualquiera pueda probar esos flujos en su computador. Esta edición está pensada para que cualquier persona pueda recorrer los flujos, cambiar un dato y ver su efecto. Los nombres de predios, importes, equipos y operaciones son de ejemplo.
 
 ### Implementación
 
