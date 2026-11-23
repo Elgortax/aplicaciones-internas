@@ -7,6 +7,10 @@ Portafolio de Alexis Rodríguez Riquelme · Ingeniería en Informática.
 
 ## Probar en tu computador
 
+**[Descargar la demo en un solo archivo HTML](https://github.com/Elgortax/terreno-ops/releases/download/v1.0.0/Terreno-Ops.html)**. Guárdala y haz doble clic para abrir las siete aplicaciones. Funciona sin conexión.
+
+Si quieres revisar el código fuente:
+
 1. [Descarga el proyecto en ZIP](https://github.com/Elgortax/terreno-ops/archive/refs/heads/main.zip).
 2. Extrae la carpeta completa.
 3. Abre **index.html** con Chrome, Edge, Firefox o Safari actual.
@@ -32,6 +36,8 @@ Desarrollé estas demostraciones a partir de problemas que abordo en mi trabajo 
 ### Implementación
 
 HTML, CSS y JavaScript sin paquetes de ejecución. **modelo.js** contiene las reglas de abonos, reservas y evaluación, junto con los datos de muestra. **interfaz.js** conecta esas reglas con formularios, indicadores, filtros y navegación por teclado. **estilos.css** adapta la interfaz a escritorio y móvil. La aplicación no usa API, base de datos, cuentas ni servicios de analítica.
+
+Puedes regenerar el archivo portable desde la carpeta del proyecto con `node crear-portable.cjs`. Solo este paso de compilación opcional requiere Node.js.
 
 En el evaluador, el resultado corresponde a las ventas proyectadas menos adquisición, obras y comercialización. El margen se expresa sobre ventas. El punto de equilibrio redondea hacia arriba los costos fijos divididos por el ingreso unitario después de comercialización. Las cifras están en pesos chilenos y el ejercicio excluye impuestos y financiamiento.
 
