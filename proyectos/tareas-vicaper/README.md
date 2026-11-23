@@ -1,23 +1,21 @@
 # Tareas Vicaper
 
-**Creador de la aplicación original y de su demo pública — Alexis Rodríguez Riquelme**, Analista TI en Grupo Tierras de Chile.
+Conecta los pedidos que llegan por chat con tareas asignadas, fechas de compromiso y un registro de avances.
 
-## Finalidad
+Creada por Alexis Rodríguez, Analista TI en Grupo Tierras de Chile.
 
-Coordina el trabajo entre áreas para que cada actividad tenga una fecha, un responsable y evidencia de avance.
+## Recorrido
 
-## Recorrido de prueba
+1. Desde el chat, convierte una solicitud en tarea o créala en el tablero y asígnala a un responsable.
+2. Agrega subtareas, checklist o un archivo. Registra un avance en la bitácora y cambia el estado.
+3. Consulta Mis tareas, el calendario y las métricas para revisar vencimientos y carga de trabajo.
 
-1. Abre el proyecto de ejemplo y crea una tarea con área, responsables, prioridad y vencimiento.
-2. Añade elementos a la lista de verificación, registra una actualización y modifica el porcentaje de avance.
-3. Consulta el calendario y la gestión mensual para ubicar tareas vencidas, carga por responsable y actividades terminadas.
+Cada compromiso conserva su responsable, sus antecedentes y su fecha de seguimiento.
 
-## Resultado
+## Probar la demo
 
-Un historial de ejecución que conserva responsables, plazos y cambios de estado.
+1. [Descarga el ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/tareas-vicaper.zip) y extrae todos sus archivos.
+2. Abre **Abrir demo.cmd**. Windows con Node.js instalado.
+3. Consulta **guia.html** para el recorrido completo.
 
-## Modo local
-
-Adaptación de la aplicación de tareas y su informe mensual. Las personas y equipos son de ejemplo. Los mensajes y cambios se ven en esta copia local. Outlook, correo y adjuntos corporativos requieren el servicio original.
-
-Extrae todos los archivos del ZIP y abre **index.html** en Chrome o Edge. Los cambios se guardan en el navegador que uses. Los datos de partida son ficticios.
+Los ejemplos y las conversaciones se gestionan en el navegador local. Incluye exportación e importación de respaldo.

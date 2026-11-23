@@ -1,23 +1,21 @@
-# Radar de Terrenos
+# Nexo Tierra
 
-**Creador de la aplicación original y de su demo pública — Alexis Rodríguez Riquelme**, Analista TI en Grupo Tierras de Chile.
+Acompaña la captación de un terreno desde su primera aparición en el mercado hasta la visita, la evaluación y la decisión comercial.
 
-## Finalidad
+Creada por Alexis Rodríguez, Analista TI en Grupo Tierras de Chile.
 
-Ayuda a seleccionar predios para una evaluación más profunda comparando precio, superficie, acceso y antecedentes técnicos.
+## Recorrido
 
-## Recorrido de prueba
+1. Filtra el mercado por región, comuna, superficie o precio. Compara los predios y ubícalos en el mapa.
+2. Entra a Seguimiento, abre una oportunidad y registra antecedentes, una nota o la próxima gestión.
+3. Revisa la ficha de visita y cambia de perfil para recorrer las etapas de validación de una propuesta.
 
-1. Filtra el mercado por región o estado de revisión. Selecciona hasta cuatro predios para comparar su precio por hectárea.
-2. Actualiza la ficha técnica con derechos de agua, acceso y observaciones. Revisa también los corredores y remates del ejemplo.
-3. Abre un caso de seguimiento, agenda una visita y registra la decisión en su bitácora.
+Una oportunidad conserva su evaluación técnica, su seguimiento comercial y su historial.
 
-## Resultado
+## Probar la demo
 
-Una lista corta de oportunidades comparables y un historial de las decisiones sobre cada predio.
+1. [Descarga el ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/radar-terrenos.zip) y extrae todos sus archivos.
+2. Abre **ABRIR DEMO.cmd**. Windows de 64 bits. El ZIP incluye Node.js.
+3. Consulta **GUIA.html** para el recorrido completo.
 
-## Modo local
-
-Recorrido reconstruido de Nexo de Tierras. Ofertas, corredores y remates son ficticios. El mapa satelital, la inteligencia geoespacial y la actualización desde portales externos requieren los servicios del original.
-
-Extrae todos los archivos del ZIP y abre **index.html** en Chrome o Edge. Los cambios se guardan en el navegador que uses. Los datos de partida son ficticios.
+Incluye 32 avisos, cuatro proyectos propios, cuatro remates y cuatro corredoras ficticias. Guarda el trabajo en el equipo. La cartografía necesita internet.

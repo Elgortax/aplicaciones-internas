@@ -1,23 +1,21 @@
 # Gestión de Oficina
 
-**Creador de la aplicación original y de su demo pública — Alexis Rodríguez Riquelme**, Analista TI en Grupo Tierras de Chile.
+Centraliza personas, equipos, líneas y licencias para saber qué recurso tiene asignado cada integrante.
 
-## Finalidad
+Creada por Alexis Rodríguez, Analista TI en Grupo Tierras de Chile.
 
-Permite a TI rastrear qué recursos utiliza cada persona y qué equipos o licencias siguen disponibles.
+## Recorrido
 
-## Recorrido de prueba
+1. Abre la ficha de un usuario y revisa los equipos, líneas y cuentas que tiene asociados.
+2. Consulta un recurso y edita su asignación, disponibilidad o responsable.
+3. Revisa las relaciones y el historial para identificar qué cambió y a quién afecta.
 
-1. Busca una persona ficticia y abre su ficha para revisar sus equipos, línea y licencias.
-2. Crea un recurso o modifica su asignación. Comprueba el cambio desde la vista de personas y también desde el inventario.
-3. Revisa el avance de una cuenta Microsoft 365 y añade una nota o un documento de prueba a la ficha.
+Una misma consulta permite seguir un recurso hasta la persona y las cuentas asociadas.
 
-## Resultado
+## Probar la demo
 
-Un inventario relacionado por persona, con asignaciones, estado de las cuentas y antecedentes de cada recurso.
+1. [Descarga el ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/gestion-oficina.zip) y extrae todos sus archivos.
+2. Abre **index.html**. Navegador de escritorio actual.
+3. Consulta **README.md** para el recorrido completo.
 
-## Modo local
-
-Adaptación de las fichas y relaciones originales. Los documentos se guardan en este navegador. Los estados de Microsoft 365 sirven para el seguimiento operativo y no crean cuentas externas.
-
-Extrae todos los archivos del ZIP y abre **index.html** en Chrome o Edge. Los cambios se guardan en el navegador que uses. Los datos de partida son ficticios.
+Incluye fichas de ejemplo, asignaciones y cuentas ficticias. Los cambios se guardan en este navegador.

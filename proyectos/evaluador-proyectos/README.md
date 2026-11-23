@@ -1,23 +1,21 @@
 # Evaluador de Proyectos
 
-**Creador de la aplicación original y de su demo pública — Alexis Rodríguez Riquelme**, Analista TI en Grupo Tierras de Chile.
+Ayuda a decidir si conviene comprar y desarrollar un predio, cuánto margen dejaría y en qué meses haría falta caja.
 
-## Finalidad
+Creada por Alexis Rodríguez, Analista TI en Grupo Tierras de Chile.
 
-Permite decidir si conviene desarrollar una parcelación y qué supuestos cambian su rentabilidad.
+## Recorrido
 
-## Recorrido de prueba
+1. Abre uno de los cinco proyectos y revisa la compra por hectárea o por el predio completo, en CLP o UF.
+2. Cambia el precio de venta, el presupuesto de desarrollo o la velocidad de colocación. Compara escenarios.
+3. Contrasta cobros y pagos del terreno en el flujo mensual y revisa los gráficos e informes de la evaluación.
 
-1. Abre Mirador de Bruma en Ficha del predio y revisa la superficie, el costo de adquisición, el pie y las cuotas.
-2. En Lotes y costos, modifica el precio de una etapa en CLP o UF y agrega un costo de habilitación. En Escenarios cambia el precio o la velocidad de venta.
-3. Compara el margen de los predios y abre Flujo mensual para ver ventas, pies, cuotas y pagos al propietario. Exporta la tabla o imprime la vista.
+Se pueden comparar proyectos y ver qué supuesto explica la diferencia en margen o caja.
 
-## Resultado
+## Probar la demo
 
-Una evaluación financiera por predio que muestra cómo cambian los ingresos, el margen y el calendario de cobro.
+1. [Descarga el ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/evaluador-proyectos.zip) y extrae todos sus archivos.
+2. Abre **Iniciar demo.cmd**. Windows o un navegador actual con Abrir demo.html.
+3. Consulta **Guía de la demo.html** para el recorrido completo.
 
-## Modo local
-
-Recorrido reconstruido con una implementación independiente y cifras ficticias. La UF es editable. El flujo muestra hasta 240 meses. Territorio incluye un índice por región y comuna. El mapa satelital y el análisis remoto pertenecen al sistema original.
-
-Extrae todos los archivos del ZIP y abre **index.html** en Chrome o Edge. Los cambios se guardan en el navegador que uses. Los datos de partida son ficticios.
+Cinco proyectos ficticios y dos espacios de trabajo locales. El mapa y la actualización de UF usan internet.

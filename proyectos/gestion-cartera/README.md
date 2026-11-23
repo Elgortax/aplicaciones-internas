@@ -1,23 +1,21 @@
 # Gestión de Cartera
 
-**Creador de la aplicación original y de su demo pública — Alexis Rodríguez Riquelme**, Analista TI en Grupo Tierras de Chile.
+Conecta la disponibilidad de cada lote con las visitas, cotizaciones y planes de pago que se preparan para un cliente.
 
-## Finalidad
+Creada por Alexis Rodríguez, Analista TI en Grupo Tierras de Chile.
 
-Conecta la cotización de un lote con su reserva, los hitos legales y los pagos hasta la escritura.
+## Recorrido
 
-## Recorrido de prueba
+1. Elige un proyecto y consulta qué lotes están disponibles. Abre la ficha para ver sus antecedentes.
+2. Revisa una visita y prepara una cotización para el lote. Cambia las condiciones y consulta el plan de pago.
+3. Cambia de perfil para ver el trabajo desde otra función. Descarga un reporte o exporta un respaldo de tus cambios.
 
-1. Cotiza un lote disponible. Ajusta el descuento, la UF, el pie y el número de cuotas para ver el precio y el saldo financiado.
-2. Desde Cartera, lleva la operación por reserva, validación y promesa. Comprueba cómo se descuenta el lote del stock disponible.
-3. Concilia un abono, reprograma una cita y consulta la bitácora. Finaliza con escritura o registra el desistimiento o la resciliación que corresponda.
+La ficha de venta, el lote y los documentos se pueden consultar en el mismo lugar.
 
-## Resultado
+## Probar la demo
 
-Una cartera en la que se puede rastrear el estado comercial del cliente, la disponibilidad del lote y el saldo pendiente.
+1. [Descarga el ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/gestion-cartera.zip) y extrae todos sus archivos.
+2. Abre **index.html**. Navegador de escritorio actual.
+3. Consulta **COMO_FUNCIONA.html** para el recorrido completo.
 
-## Modo local
-
-Recorrido reconstruido con conciliación local y una UF de simulación. La validación documental, las devoluciones y aprobaciones financieras externas del sistema corporativo quedan fuera de esta edición.
-
-Extrae todos los archivos del ZIP y abre **index.html** en Chrome o Edge. Los cambios se guardan en el navegador que uses. Los datos de partida son ficticios.
+Cuatro proyectos ficticios, 96 lotes, 68 cotizaciones y 32 planes. Guarda los cambios en el navegador.

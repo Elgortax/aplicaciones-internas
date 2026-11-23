@@ -1,0 +1,1 @@
+[Descargar las once demos para uso local](https://github.com/Elgortax/terreno-ops/releases/tag/v3.0.0). Los campos de contacto y RUT de ejemplo muestran un formato con letras X. Gestión de Flujo conserva las atribuciones de autor y los avisos de licencia de sus bibliotecas de PDF.

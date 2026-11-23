@@ -1,23 +1,21 @@
 # Evaluador de Proyectos Broker
 
-**Creador de la aplicación original y de su demo pública — Alexis Rodríguez Riquelme**, Analista TI en Grupo Tierras de Chile.
+Simula la venta de un loteo para comprobar cuándo se financian las obras y cuánto puede recibir el propietario.
 
-## Finalidad
+Creada por Alexis Rodríguez, Analista TI en Grupo Tierras de Chile.
 
-Modela un loteo con un aportante de terreno y permite negociar cómo y cuándo se distribuyen los ingresos del proyecto.
+## Recorrido
 
-## Recorrido de prueba
+1. Abre Lomas del Canelo y revisa las condiciones de venta por lote, incluido el interés anual de las cuotas.
+2. Compara los escenarios conservador, base y optimista. Observa cómo cambian la recaudación y los meses de venta.
+3. En el flujo de caja mensual, cruza cobros, costo de obras y pagos al propietario.
 
-1. Revisa superficie, lotes, precio y calendario comercial. Cambia la unidad entre CLP y UF.
-2. Elige el esquema de pago al aportante y modifica pie, cuotas, hitos de obras o costos de habilitación.
-3. Compara los escenarios y la caja mes a mes. Duplica el proyecto para conservar la alternativa de negociación.
+Se identifican meses con déficit y el efecto de cambiar tasa, precios o calendario de obras.
 
-## Resultado
+## Probar la demo
 
-Un escenario de negocio que relaciona precio de venta, velocidad de colocación, obras y pagos al aportante.
+1. [Descarga el ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/evaluador-broker.zip) y extrae todos sus archivos.
+2. Abre **Abrir demo.html**. Navegador de escritorio actual.
+3. Consulta **Guía de la demo.html** para el recorrido completo.
 
-## Modo local
-
-Adaptación de la calculadora original con un predio, precios, costos e hitos ficticios. Los cambios y respaldos permanecen en la copia local.
-
-Extrae todos los archivos del ZIP y abre **index.html** en Chrome o Edge. Los cambios se guardan en el navegador que uses. Los datos de partida son ficticios.
+Incluye un loteo ficticio. Conserva el archivo HTML junto a la carpeta archivos.

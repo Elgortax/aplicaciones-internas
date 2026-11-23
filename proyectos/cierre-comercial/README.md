@@ -1,23 +1,21 @@
 # Cierre Comercial
 
-**Creador de la aplicación original y de su demo pública — Alexis Rodríguez Riquelme**, Analista TI en Grupo Tierras de Chile.
+Reúne ventas, costos, marketing y caja para preparar el cierre de un mes y explicar sus variaciones frente al directorio.
 
-## Finalidad
+Creada por Alexis Rodríguez, Analista TI en Grupo Tierras de Chile.
 
-Reúne los resultados del mes para que dirección pueda explicar qué se vendió, cuánto costó y con qué caja terminó el período.
+## Recorrido
 
-## Recorrido de prueba
+1. Selecciona un mes y recorre las etapas del cierre. Revisa ventas, desistimientos, gastos y saldos.
+2. Consulta el tablero y compara los indicadores comerciales y financieros con el histórico.
+3. Abre el forecast, cambia un supuesto y revisa cómo afecta el inventario y los informes.
 
-1. Abre Preparar cierre y selecciona el período. Revisa el stock inicial y la meta de ventas.
-2. Registra ventas, desistimientos, costos, inversión en marketing, saldos de caja y composición de ingresos. Recorre las ocho etapas y guarda el cierre con una nota ejecutiva.
-3. Vuelve al resumen y al histórico. Compara ventas netas, EBITDA y saldo de caja, o revisa en cuántos meses se agotaría el stock al ritmo actual.
+Un cierre mensual con sus indicadores, comparativos e informes de proyección.
 
-## Resultado
+## Probar la demo
 
-Un cierre mensual trazable, una comparación con el presupuesto y una proyección simple del inventario.
+1. [Descarga el ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/cierre-comercial.zip) y extrae todos sus archivos.
+2. Abre **Abrir demo.cmd**. Windows de 64 bits. El ZIP incluye Node.js.
+3. Consulta **Cómo funciona.html** para el recorrido completo.
 
-## Modo local
-
-Recorrido reconstruido. Los importes se ingresan localmente. El forecast mantiene constante el ritmo del mes. Los conectores de CRM, marketing y noticias del original quedan fuera de esta edición.
-
-Extrae todos los archivos del ZIP y abre **index.html** en Chrome o Edge. Los cambios se guardan en el navegador que uses. Los datos de partida son ficticios.
+Contiene 29 meses de ejemplo. El inventario y los reportes del equipo se simulan localmente.

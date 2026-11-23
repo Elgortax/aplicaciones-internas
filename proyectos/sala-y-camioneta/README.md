@@ -1,23 +1,21 @@
 # Sala de reuniones y camioneta
 
-**Creador de la aplicación original y de su demo pública — Alexis Rodríguez Riquelme**, Analista TI en Grupo Tierras de Chile.
+Coordina en una sola aplicación la reserva de salas y el uso de la camioneta compartida.
 
-## Finalidad
+Creada por Alexis Rodríguez, Analista TI en Grupo Tierras de Chile.
 
-Evita reservas superpuestas de las salas y de la camioneta, con reglas independientes para cada recurso.
+## Recorrido
 
-## Recorrido de prueba
+1. Entra a la agenda de salas, elige una franja e invita a participantes. Prueba un horario que ya esté ocupado.
+2. Abre la agenda de la camioneta y completa una reserva. Revisa ambas agendas desde el inicio.
+3. Cambia de colaborador a administrador y consulta las invitaciones y los avisos simulados.
 
-1. Abre la sala principal o la sala cocina, selecciona un horario futuro y crea una reunión de prueba.
-2. Intenta repetir el mismo intervalo o reservar la cocina entre las 13:00 y las 16:30. La aplicación explica el conflicto.
-3. Cambia a la agenda de camioneta, programa retiro y devolución, revisa el destino y luego edita o cancela el viaje.
+La disponibilidad de cada recurso queda visible y los cruces se detectan al reservar.
 
-## Resultado
+## Probar la demo
 
-Dos agendas independientes con disponibilidad validada y reservas editables en horario de Chile.
+1. [Descarga el ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/sala-y-camioneta.zip) y extrae todos sus archivos.
+2. Abre **ABRIR DEMO.cmd**. Windows con Node.js 20.11 o posterior instalado.
+3. Consulta **GUIA DE USO.html** para el recorrido completo.
 
-## Modo local
-
-Adaptación de ambas interfaces y de sus validadores originales. Los correos e invitaciones están simulados. Extrae la carpeta completa para navegar entre ambas agendas.
-
-Extrae todos los archivos del ZIP y abre **index.html** en Chrome o Edge. Los cambios se guardan en el navegador que uses. Los datos de partida son ficticios.
+Una sola demo con dos agendas, pantalla de sala, perfiles y bandeja local de avisos.

@@ -1,30 +1,23 @@
-# Terreno Ops · Aplicaciones inmobiliarias y de operación
+# Aplicaciones de Alexis Rodríguez
 
-**Alexis Rodríguez Riquelme** · Analista TI en Grupo Tierras de Chile e ingeniero en informática. Creé las aplicaciones del portal de trabajo y sus versiones públicas de demostración.
+Soy Analista TI en Grupo Tierras de Chile. Creé estas once aplicaciones para evaluar terrenos, gestionar ventas y finanzas, y coordinar el trabajo de oficina. Cada descarga contiene la aplicación y su guía con un escenario de demostración.
 
-Cada ficha presenta la finalidad del proyecto, sus usuarios y un recorrido reproducible con el resultado esperado. Las demos trabajan con datos ficticios, en el navegador y sin configurar una base de datos.
+[Portafolio](https://alexis-rodriguez.vercel.app/) · [Todos los ZIP](https://github.com/Elgortax/terreno-ops/releases/tag/v3.0.0)
 
-## Probar las aplicaciones
+| Aplicación | Qué permite hacer | Descargar |
+| --- | --- | --- |
+| [Gestión de Cartera](proyectos/gestion-cartera) | Conecta la disponibilidad de cada lote con las visitas, cotizaciones y planes de pago que se preparan para un cliente. | [ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/gestion-cartera.zip) |
+| [Situación de Proyectos · GTX](proyectos/situacion-proyectos) | Permite que cada área vea quién lleva una tarea, qué partida presupuestaria la financia y qué falta para terminarla. | [ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/situacion-proyectos.zip) |
+| [Nexo Tierra](proyectos/radar-terrenos) | Acompaña la captación de un terreno desde su primera aparición en el mercado hasta la visita, la evaluación y la decisión comercial. | [ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/radar-terrenos.zip) |
+| [Evaluador de Proyectos](proyectos/evaluador-proyectos) | Ayuda a decidir si conviene comprar y desarrollar un predio, cuánto margen dejaría y en qué meses haría falta caja. | [ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/evaluador-proyectos.zip) |
+| [Evaluador de Proyectos Broker](proyectos/evaluador-broker) | Simula la venta de un loteo para comprobar cuándo se financian las obras y cuánto puede recibir el propietario. | [ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/evaluador-broker.zip) |
+| [Panel de Seguimiento Comercial y Marketing](proyectos/panel-seguimiento) | Reúne metas, reportes del equipo y actividad de marketing para localizar dónde se pierde el avance entre el primer contacto y la firma. | [ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/panel-seguimiento.zip) |
+| [Cierre Comercial](proyectos/cierre-comercial) | Reúne ventas, costos, marketing y caja para preparar el cierre de un mes y explicar sus variaciones frente al directorio. | [ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/cierre-comercial.zip) |
+| [Gestión de Flujo](proyectos/gestion-flujo) | Permite revisar cuánto dinero se espera cobrar y cuánto presupuesto queda antes de autorizar una orden de compra. | [ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/gestion-flujo.zip) |
+| [Sala de reuniones y camioneta](proyectos/sala-y-camioneta) | Coordina en una sola aplicación la reserva de salas y el uso de la camioneta compartida. | [ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/sala-y-camioneta.zip) |
+| [Tareas Vicaper](proyectos/tareas-vicaper) | Conecta los pedidos que llegan por chat con tareas asignadas, fechas de compromiso y un registro de avances. | [ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/tareas-vicaper.zip) |
+| [Gestión de Oficina](proyectos/gestion-oficina) | Centraliza personas, equipos, líneas y licencias para saber qué recurso tiene asignado cada integrante. | [ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/gestion-oficina.zip) |
 
-[Descargar el portafolio completo](https://github.com/Elgortax/terreno-ops/archive/refs/heads/main.zip). Extrae el ZIP y abre **index.html**. También puedes descargar una sola aplicación desde la tabla, extraer su carpeta y abrir **index.html**. En ambos casos, **guia.html** explica el flujo y los alcances de la demo.
+## Cómo abrirlas
 
-| Aplicación y ficha | Finalidad | Descarga individual |
-|---|---|---|
-| [Cierre Comercial](proyectos/cierre-comercial/README.md) | Reúne los resultados del mes para que dirección pueda explicar qué se vendió, cuánto costó y con qué caja terminó el período. | [ZIP](https://raw.githubusercontent.com/Elgortax/terreno-ops/main/descargas/cierre-comercial.zip) |
-| [Evaluador de Proyectos](proyectos/evaluador-proyectos/README.md) | Permite decidir si conviene desarrollar una parcelación y qué supuestos cambian su rentabilidad. | [ZIP](https://raw.githubusercontent.com/Elgortax/terreno-ops/main/descargas/evaluador-proyectos.zip) |
-| [Proyección de Ventas](proyectos/proyeccion-ventas/README.md) | Estima cuándo se convertirá una venta proyectada en efectivo, considerando el pie, las cuotas y las cuentas por cobrar. | [ZIP](https://raw.githubusercontent.com/Elgortax/terreno-ops/main/descargas/proyeccion-ventas.zip) |
-| [Panel de Seguimiento](proyectos/panel-seguimiento/README.md) | Ayuda al equipo comercial a detectar en qué etapa se pierden oportunidades antes de terminar el mes. | [ZIP](https://raw.githubusercontent.com/Elgortax/terreno-ops/main/descargas/panel-seguimiento.zip) |
-| [Control de Promociones](proyectos/control-promociones/README.md) | Ordena las campañas inmobiliarias y permite entender cuánto cambia el precio y el flujo de cobro bajo una promoción. | [ZIP](https://raw.githubusercontent.com/Elgortax/terreno-ops/main/descargas/control-promociones.zip) |
-| [Tareas Vicaper](proyectos/tareas-vicaper/README.md) | Coordina el trabajo entre áreas para que cada actividad tenga una fecha, un responsable y evidencia de avance. | [ZIP](https://raw.githubusercontent.com/Elgortax/terreno-ops/main/descargas/tareas-vicaper.zip) |
-| [Evaluador de Proyectos Broker](proyectos/evaluador-broker/README.md) | Modela un loteo con un aportante de terreno y permite negociar cómo y cuándo se distribuyen los ingresos del proyecto. | [ZIP](https://raw.githubusercontent.com/Elgortax/terreno-ops/main/descargas/evaluador-broker.zip) |
-| [Gantt Proyectos](proyectos/gantt-proyectos/README.md) | Muestra la secuencia de una obra y permite saber qué actividad o hito explica su avance. | [ZIP](https://raw.githubusercontent.com/Elgortax/terreno-ops/main/descargas/gantt-proyectos.zip) |
-| [Radar de Terrenos](proyectos/radar-terrenos/README.md) | Ayuda a seleccionar predios para una evaluación más profunda comparando precio, superficie, acceso y antecedentes técnicos. | [ZIP](https://raw.githubusercontent.com/Elgortax/terreno-ops/main/descargas/radar-terrenos.zip) |
-| [Gestión de Oficina](proyectos/gestion-oficina/README.md) | Permite a TI rastrear qué recursos utiliza cada persona y qué equipos o licencias siguen disponibles. | [ZIP](https://raw.githubusercontent.com/Elgortax/terreno-ops/main/descargas/gestion-oficina.zip) |
-| [Gestión de Cartera](proyectos/gestion-cartera/README.md) | Conecta la cotización de un lote con su reserva, los hitos legales y los pagos hasta la escritura. | [ZIP](https://raw.githubusercontent.com/Elgortax/terreno-ops/main/descargas/gestion-cartera.zip) |
-| [Sala de reuniones y camioneta](proyectos/sala-y-camioneta/README.md) | Evita reservas superpuestas de las salas y de la camioneta, con reglas independientes para cada recurso. | [ZIP](https://raw.githubusercontent.com/Elgortax/terreno-ops/main/descargas/sala-y-camioneta.zip) |
-| [Gestión de Flujo](proyectos/gestion-flujo/README.md) | Relaciona compras, aprobaciones, presupuesto de obras y movimientos de caja para saber qué se comprometió y qué se pagó. | [ZIP](https://raw.githubusercontent.com/Elgortax/terreno-ops/main/descargas/gestion-flujo.zip) |
-| [GTX · Situación de Proyectos](proyectos/situacion-proyectos/README.md) | Reúne el estado de las obras por espacio de trabajo para que el equipo sepa qué partida está atrasada y cuál es el próximo paso. | [ZIP](https://raw.githubusercontent.com/Elgortax/terreno-ops/main/descargas/situacion-proyectos.zip) |
-
-## Ediciones
-
-Esta edición contiene ocho adaptaciones de interfaces originales y seis recorridos reconstruidos para uso público. Las fichas indican los límites concretos de cada versión. La [primera edición con siete módulos](https://github.com/Elgortax/terreno-ops/releases/tag/v1.0.0) sigue disponible.
+Elige una aplicación, descarga y extrae su ZIP completo. En la ficha de cada proyecto figura el archivo de inicio. Cuatro aplicaciones incluyen su propio Node.js para Windows. Las agendas compartidas y Tareas Vicaper usan el Node.js instalado en el equipo. En las demás fichas encontrarás la opción para abrir el HTML directamente.

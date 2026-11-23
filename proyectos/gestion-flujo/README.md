@@ -1,23 +1,21 @@
 # Gestión de Flujo
 
-**Creador de la aplicación original y de su demo pública — Alexis Rodríguez Riquelme**, Analista TI en Grupo Tierras de Chile.
+Permite revisar cuánto dinero se espera cobrar y cuánto presupuesto queda antes de autorizar una orden de compra.
 
-## Finalidad
+Creada por Alexis Rodríguez, Analista TI en Grupo Tierras de Chile.
 
-Relaciona compras, aprobaciones, presupuesto de obras y movimientos de caja para saber qué se comprometió y qué se pagó.
+## Recorrido
 
-## Recorrido de prueba
+1. Ajusta el stock, las ventas, el pie o las cuotas de un proyecto y revisa la proyección mensual.
+2. Consulta las cuentas por cobrar y envía una orden de compra con cargo al presupuesto.
+3. Recorre las validaciones de la orden y compara el presupuesto antes y después de liberarla.
 
-1. Crea una orden de compra con proveedor, centro de costo, monto neto, cantidad de cotizaciones y criterio de selección.
-2. Envíala a revisión y cambia el rol de demostración a Jefatura o Finanzas. Aprueba u observa la orden según el monto.
-3. Registra un pago total o parcial y sigue su efecto en el saldo de la orden, el presupuesto comprometido y la caja del día.
+Se ve cómo una venta afecta los cobros futuros y cómo una compra compromete el presupuesto.
 
-## Resultado
+## Probar la demo
 
-Una orden trazable desde la solicitud hasta la salida de dinero, con efecto visible en caja y presupuesto.
+1. [Descarga el ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/gestion-flujo.zip) y extrae todos sus archivos.
+2. Abre **Gestion de Flujo - Demo.html**. Navegador de escritorio actual.
+3. Consulta **Guia.html** para el recorrido completo.
 
-## Modo local
-
-Recorrido reconstruido con el modelo original de totales diarios. Los umbrales, proveedores y montos son ficticios. Los roles se alternan localmente. La emisión bancaria, el correo y la sincronización quedan fuera de la demo.
-
-Extrae todos los archivos del ZIP y abre **index.html** en Chrome o Edge. Los cambios se guardan en el navegador que uses. Los datos de partida son ficticios.
+La aplicación completa está en un HTML y el escenario de prueba se guarda en el navegador.

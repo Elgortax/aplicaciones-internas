@@ -1,23 +1,21 @@
-# GTX · Situación de Proyectos
+# Situación de Proyectos · GTX
 
-**Creador de la aplicación original y de su demo pública — Alexis Rodríguez Riquelme**, Analista TI en Grupo Tierras de Chile.
+Permite que cada área vea quién lleva una tarea, qué partida presupuestaria la financia y qué falta para terminarla.
 
-## Finalidad
+Creada por Alexis Rodríguez, Analista TI en Grupo Tierras de Chile.
 
-Reúne el estado de las obras por espacio de trabajo para que el equipo sepa qué partida está atrasada y cuál es el próximo paso.
+## Recorrido
 
-## Recorrido de prueba
+1. Entra como administrador, colaborador o lector y consulta la vista general de los proyectos.
+2. Abre un área, desglosa una tarea en subítems, registra un avance y adjunta los antecedentes.
+3. Revisa el presupuesto en pesos chilenos y vuelve a entrar con otro perfil para comprobar los permisos.
 
-1. Selecciona un espacio de trabajo y crea un proyecto. Agrega una partida de obra con responsable y vencimiento.
-2. Abre Mis pendientes o Calendario. Actualiza el estado, reprograma la fecha y deja una observación en la conversación de la partida.
-3. Adjunta un documento de prueba al proyecto y vuelve a Vista general para revisar el avance y los pendientes en foco.
+El equipo puede seguir el avance y el presupuesto desde la misma ficha.
 
-## Resultado
+## Probar la demo
 
-Una vista del avance por proyecto con vencimientos, responsables, comentarios y documentos asociados.
+1. [Descarga el ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/situacion-proyectos.zip) y extrae todos sus archivos.
+2. Abre **INICIAR DEMO.cmd**. Windows de 64 bits. El ZIP incluye Node.js.
+3. Consulta **COMO FUNCIONA GTX.html** para el recorrido completo.
 
-## Modo local
-
-Aplicación adicional a las trece del portal. Recorrido reconstruido a partir de las vistas de GTX. Las personas son ficticias y los archivos se guardan en el equipo. Los permisos corporativos y las notificaciones compartidas requieren el servicio original.
-
-Extrae todos los archivos del ZIP y abre **index.html** en Chrome o Edge. Los cambios se guardan en el navegador que uses. Los datos de partida son ficticios.
+Incluye tres accesos locales precargados, proyectos de ejemplo y documentación.
