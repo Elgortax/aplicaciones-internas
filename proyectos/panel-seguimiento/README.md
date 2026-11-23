@@ -14,7 +14,7 @@ El panel permite relacionar el gasto en captación con las visitas y los resulta
 
 ## Probar la demo
 
-1. [Descarga el ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/panel-seguimiento.zip) y extrae todos sus archivos.
+1. [Descarga el ZIP](https://github.com/Elgortax/aplicaciones-internas/releases/download/v3.0.0/panel-seguimiento.zip) y extrae todos sus archivos.
 2. Abre **Abrir demo.cmd**. Windows de 64 bits. El ZIP incluye Node.js.
 3. Consulta **Cómo funciona.html** para el recorrido completo.
 

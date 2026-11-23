@@ -14,7 +14,7 @@ Se ve cómo una venta afecta los cobros futuros y cómo una compra compromete el
 
 ## Probar la demo
 
-1. [Descarga el ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/gestion-flujo.zip) y extrae todos sus archivos.
+1. [Descarga el ZIP](https://github.com/Elgortax/aplicaciones-internas/releases/download/v3.0.0/gestion-flujo.zip) y extrae todos sus archivos.
 2. Abre **Gestion de Flujo - Demo.html**. Navegador de escritorio actual.
 3. Consulta **Guia.html** para el recorrido completo.
 

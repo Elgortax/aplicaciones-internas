@@ -14,7 +14,7 @@ Se identifican meses con déficit y el efecto de cambiar tasa, precios o calenda
 
 ## Probar la demo
 
-1. [Descarga el ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/evaluador-broker.zip) y extrae todos sus archivos.
+1. [Descarga el ZIP](https://github.com/Elgortax/aplicaciones-internas/releases/download/v3.0.0/evaluador-broker.zip) y extrae todos sus archivos.
 2. Abre **Abrir demo.html**. Navegador de escritorio actual.
 3. Consulta **Guía de la demo.html** para el recorrido completo.
 

@@ -14,7 +14,7 @@ Una misma consulta permite seguir un recurso hasta la persona y las cuentas asoc
 
 ## Probar la demo
 
-1. [Descarga el ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/gestion-oficina.zip) y extrae todos sus archivos.
+1. [Descarga el ZIP](https://github.com/Elgortax/aplicaciones-internas/releases/download/v3.0.0/gestion-oficina.zip) y extrae todos sus archivos.
 2. Abre **index.html**. Navegador de escritorio actual.
 3. Consulta **README.md** para el recorrido completo.
 

@@ -14,7 +14,7 @@ Se pueden comparar proyectos y ver qué supuesto explica la diferencia en margen
 
 ## Probar la demo
 
-1. [Descarga el ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/evaluador-proyectos.zip) y extrae todos sus archivos.
+1. [Descarga el ZIP](https://github.com/Elgortax/aplicaciones-internas/releases/download/v3.0.0/evaluador-proyectos.zip) y extrae todos sus archivos.
 2. Abre **Iniciar demo.cmd**. Windows o un navegador actual con Abrir demo.html.
 3. Consulta **Guía de la demo.html** para el recorrido completo.
 

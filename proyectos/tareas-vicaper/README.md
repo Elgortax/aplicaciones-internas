@@ -14,7 +14,7 @@ Cada compromiso conserva su responsable, sus antecedentes y su fecha de seguimie
 
 ## Probar la demo
 
-1. [Descarga el ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/tareas-vicaper.zip) y extrae todos sus archivos.
+1. [Descarga el ZIP](https://github.com/Elgortax/aplicaciones-internas/releases/download/v3.0.0/tareas-vicaper.zip) y extrae todos sus archivos.
 2. Abre **Abrir demo.cmd**. Windows con Node.js instalado.
 3. Consulta **guia.html** para el recorrido completo.
 

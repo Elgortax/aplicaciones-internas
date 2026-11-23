@@ -14,7 +14,7 @@ La disponibilidad de cada recurso queda visible y los cruces se detectan al rese
 
 ## Probar la demo
 
-1. [Descarga el ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/sala-y-camioneta.zip) y extrae todos sus archivos.
+1. [Descarga el ZIP](https://github.com/Elgortax/aplicaciones-internas/releases/download/v3.0.0/sala-y-camioneta.zip) y extrae todos sus archivos.
 2. Abre **ABRIR DEMO.cmd**. Windows con Node.js 20.11 o posterior instalado.
 3. Consulta **GUIA DE USO.html** para el recorrido completo.
 

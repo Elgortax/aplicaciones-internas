@@ -14,7 +14,7 @@ El equipo puede seguir el avance y el presupuesto desde la misma ficha.
 
 ## Probar la demo
 
-1. [Descarga el ZIP](https://github.com/Elgortax/terreno-ops/releases/download/v3.0.0/situacion-proyectos.zip) y extrae todos sus archivos.
+1. [Descarga el ZIP](https://github.com/Elgortax/aplicaciones-internas/releases/download/v3.0.0/situacion-proyectos.zip) y extrae todos sus archivos.
 2. Abre **INICIAR DEMO.cmd**. Windows de 64 bits. El ZIP incluye Node.js.
 3. Consulta **COMO FUNCIONA GTX.html** para el recorrido completo.
 
