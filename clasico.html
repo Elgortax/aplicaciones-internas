@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' file:; style-src 'self' file: 'unsafe-inline'; img-src 'self' data: file:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Terreno Ops · Alexis Rodríguez</title>
+  <link rel="stylesheet" href="estilos.css">
+  <script defer src="modelo.js"></script>
+  <script defer src="interfaz.js"></script>
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <aside>
+    <a class="brand" href="#inicio" aria-label="Terreno Ops, inicio"><span class="mark" aria-hidden="true">◩</span>Terreno <b>Ops</b></a>
+    <nav id="nav" aria-label="Módulos del portafolio"></nav>
+    <div class="credit"><span class="avatar">AR</span><span><strong>Alexis Rodríguez</strong><small>Ingeniería en Informática</small></span></div>
+  </aside>
+  <div class="workspace">
+    <header><span>Portafolio <span aria-hidden="true">/</span> <b id="crumb">Vista general</b></span><span class="local"><i></i>Demo local</span></header>
+    <main id="contenido" tabindex="-1"></main>
+    <footer>Terreno Ops · Datos ficticios <span id="saveStatus">Cambios en este navegador</span></footer>
+  </div>
+  <dialog id="dialog"><form id="form"><div class="dialog-head"><h2 id="dialogTitle"></h2><button class="icon" type="button" data-close aria-label="Cerrar">×</button></div><div id="fields"></div><p id="error" role="alert"></p><button id="submit" class="primary" type="submit">Guardar</button></form></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
+

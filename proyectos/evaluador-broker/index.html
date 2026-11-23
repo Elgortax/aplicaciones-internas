@@ -1,0 +1,2407 @@
+<!DOCTYPE html>
+<html  lang="es" >
+<head><meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; script-src &#39;unsafe-inline&#39;; style-src &#39;unsafe-inline&#39;; img-src data: blob:; font-src data:; media-src blob: data:; frame-src blob: data:; connect-src &#39;none&#39;; form-action &#39;none&#39;; base-uri &#39;none&#39;">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1F5D45">
+<title>Evaluador de Proyectos Broker</title>
+
+
+
+
+
+
+
+
+
+
+<style>
+:root{
+  color-scheme: light;
+  --plane:#F4F6EF;
+  --surface:#FFFFFF;
+  --surface-2:#FAFBF6;
+  --ink:#14201A;
+  --ink-2:#4B564F;
+  --ink-3:#7C877E;
+  --rule:#DEE3D6;
+  --rule-strong:#C4CCBA;
+  --accent:#1F5D45;
+  --accent-soft:#E7F0EA;
+  --on-accent:#FFFFFF;
+  --hero-bg:#1F5D45; --hero-border:#1F5D45; --hero-ink:#FFFFFF; --hero-sub:rgba(255,255,255,.74);
+  --field:#FFFFFF;
+  --field-rule:#CBD3C3;
+  --s-caja:#2a78d6;
+  --s-egreso:#eb6834;
+  --s-ingreso:#1baf7a;
+  --s-4:#eda100;
+  --e-cons:#86b6ef; --e-base:#2a78d6; --e-opt:#104281;
+  --good:#0ca30c;
+  --warn:#b45309;
+  --crit:#d03b3b;
+  --shadow:0 1px 2px rgba(20,32,26,.06), 0 8px 24px -16px rgba(20,32,26,.28);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --plane:#0D110E; --surface:#161B17; --surface-2:#1B211C;
+    --ink:#EEF2EA; --ink-2:#AFB9AF; --ink-3:#7F8A80;
+    --rule:#262E27; --rule-strong:#364037;
+    --accent:#5FBF95; --accent-soft:#172A21; --on-accent:#0B140F;
+    --hero-bg:#163327; --hero-border:#2E6047; --hero-ink:#EAF7EF; --hero-sub:#9CC7B1;
+    --field:#11150F; --field-rule:#2E372F;
+    --s-caja:#3987e5; --s-egreso:#d95926; --s-ingreso:#199e70; --s-4:#c98500;
+    --e-cons:#184f95; --e-base:#3987e5; --e-opt:#9ec5f4;
+    --good:#0ca30c; --warn:#d99a3a; --crit:#e66767;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --plane:#0D110E; --surface:#161B17; --surface-2:#1B211C;
+  --ink:#EEF2EA; --ink-2:#AFB9AF; --ink-3:#7F8A80;
+  --rule:#262E27; --rule-strong:#364037;
+  --accent:#5FBF95; --accent-soft:#172A21; --on-accent:#0B140F;
+  --hero-bg:#163327; --hero-border:#2E6047; --hero-ink:#EAF7EF; --hero-sub:#9CC7B1;
+  --field:#11150F; --field-rule:#2E372F;
+  --s-caja:#3987e5; --s-egreso:#d95926; --s-ingreso:#199e70; --s-4:#c98500;
+  --e-cons:#184f95; --e-base:#3987e5; --e-opt:#9ec5f4;
+  --good:#0ca30c; --warn:#d99a3a; --crit:#e66767;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html.validando-acceso body,
+html.mesa-validando-espacio body{visibility:hidden}
+body{
+  margin:0; background:var(--plane); color:var(--ink);
+  font-family:"Public Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:"Archivo", ui-sans-serif, system-ui, sans-serif; margin:0; text-wrap:balance; letter-spacing:-.015em}
+.num{font-family:"IBM Plex Mono", ui-monospace, monospace; font-variant-numeric:tabular-nums}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky; top:0; z-index:40;
+  display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  padding:12px 22px;
+  background:color-mix(in srgb, var(--plane) 88%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--rule);
+}
+.brand{display:flex; align-items:baseline; gap:10px; margin-right:6px}
+.brand .mark{width:26px;height:26px;border-radius:3px;background:var(--accent);display:grid;place-items:center;align-self:center;flex:none}
+.brand h1{font-size:17px; font-weight:700}
+.brand .sub{font-size:11.5px; color:var(--ink-3); letter-spacing:.09em; text-transform:uppercase}
+.topbar .tools{display:flex; align-items:center; gap:10px; margin-left:auto}
+.projbar{display:flex; align-items:center; gap:7px; flex-wrap:wrap}
+.projbar .sepv{width:1px; height:20px; background:var(--rule-strong); margin:0 3px}
+.icon{width:32px; height:30px; display:grid; place-items:center; padding:0; font-size:15px; line-height:1}
+#projSelect{width:auto; min-width:170px; max-width:270px; font-family:"Public Sans",sans-serif; font-size:12.5px; padding:5px 8px}
+.menuwrap{position:relative}
+.menu{position:absolute; right:0; top:calc(100% + 6px); z-index:60; min-width:248px;
+  background:var(--surface); border:1px solid var(--rule-strong); border-radius:8px;
+  box-shadow:0 12px 32px -12px rgba(0,0,0,.42); padding:5px; display:grid; gap:1px}
+.menu button{font:inherit; font-size:12.5px; text-align:left; padding:7px 10px; border:0;
+  border-radius:5px; background:transparent; color:var(--ink); cursor:pointer; width:100%}
+.menu button:hover{background:var(--accent-soft); color:var(--accent)}
+.menu hr{border:0; border-top:1px solid var(--rule); margin:4px 2px}
+.menu .msg{font-size:11.5px; color:var(--ink-3); padding:5px 10px; line-height:1.4}
+
+.seg{display:inline-flex; border:1px solid var(--field-rule); border-radius:6px; overflow:hidden; background:var(--field)}
+.seg button{font:inherit; font-size:12px; font-weight:600; letter-spacing:.02em; padding:5px 12px; border:0; background:transparent; color:var(--ink-2); cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent); color:var(--on-accent)}
+.seg button:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
+
+.btn{font:inherit; font-size:12.5px; font-weight:600; padding:6px 13px; border-radius:6px; cursor:pointer;
+  border:1px solid var(--field-rule); background:var(--field); color:var(--ink)}
+.btn:hover{border-color:var(--accent); color:var(--accent)}
+.btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.btn.primary{background:var(--accent); border-color:var(--accent); color:var(--on-accent)}
+.btn.primary:hover{filter:brightness(1.08); color:var(--on-accent)}
+.btn.mini{font-size:11.5px; padding:4px 9px}
+.btn:disabled{opacity:.42; cursor:not-allowed}
+.btn:disabled:hover{border-color:var(--field-rule); color:var(--ink)}
+.sync-status{font-size:11px;color:var(--ink-3);white-space:nowrap}
+.sync-status[data-tone="saving"]{color:var(--warn)}
+.sync-status[data-tone="ok"]{color:var(--good)}
+.sync-status[data-tone="error"]{color:var(--crit)}
+.workspace-control{display:inline-flex;align-items:center;max-width:190px}
+.workspace-control select{width:auto;max-width:190px;padding:4px 8px;border-radius:999px;border:1px solid var(--field-rule);
+  background:var(--field);color:var(--accent);font-family:"Public Sans",sans-serif;font-size:11px;font-weight:700}
+.workspace-badge{display:inline-flex;align-items:center;max-width:190px;padding:4px 8px;border-radius:999px;
+  background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.readonly-badge{display:none;padding:4px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700}
+body.mesa-readonly .readonly-badge{display:inline-flex}
+body.mesa-readonly .rail input:disabled,
+body.mesa-readonly .rail select:disabled{opacity:.72;cursor:not-allowed}
+
+/* ---------- shell ---------- */
+.shell{display:grid; grid-template-columns:352px minmax(0,1fr); align-items:start}
+.shell.norail{grid-template-columns:minmax(0,1fr)}
+.shell.norail .rail{display:none}
+.rail{position:sticky; top:52px; align-self:start; height:calc(100vh - 52px); overflow-y:auto;
+  border-right:1px solid var(--rule); background:var(--surface); padding:6px 18px 60px}
+main{padding:20px 24px 70px; min-width:0}
+
+/* ---------- form ---------- */
+fieldset{border:0; margin:0; padding:16px 0; border-bottom:1px solid var(--rule)}
+fieldset:last-of-type{border-bottom:0}
+legend{font-family:"Archivo",sans-serif; font-size:11px; font-weight:700; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--accent); padding:0; margin-bottom:2px}
+.hint{font-size:11.5px; color:var(--ink-3); margin:2px 0 10px}
+.row{display:grid; grid-template-columns:1fr 1fr; gap:9px 10px; margin-top:9px}
+.row.one{grid-template-columns:1fr}
+.f{display:flex; flex-direction:column; gap:3px; min-width:0}
+.f label{font-size:11px; font-weight:600; color:var(--ink-2); letter-spacing:.02em}
+.f .u{font-size:10.5px; color:var(--ink-3); font-weight:400}
+.field-label-row{display:grid;grid-template-columns:1fr;gap:3px;min-height:18px}
+.field-label-row label{min-width:0}
+.land-price-mode{width:100%;max-width:none;padding:4px 6px;border-radius:4px;font-size:10.5px;font-weight:700;
+  font-family:"Public Sans",sans-serif;color:var(--accent)}
+input[type="text"], select{font:inherit; font-size:13px;
+  font-family:"IBM Plex Mono", ui-monospace, monospace; font-variant-numeric:tabular-nums;
+  width:100%; padding:6px 8px; border-radius:5px; border:1px solid var(--field-rule);
+  background:var(--field); color:var(--ink)}
+select, input.txt{font-family:"Public Sans",sans-serif}
+input:focus, select:focus{outline:2px solid var(--accent); outline-offset:-1px; border-color:var(--accent)}
+.derived{font-size:11px; color:var(--ink-3); margin-top:5px}
+.derived b{color:var(--ink-2); font-weight:600}
+.extra-income-list{display:grid;gap:8px;margin-top:10px}
+.extra-income{border:1px solid var(--rule);border-radius:7px;background:var(--surface-2);padding:9px}
+.extra-income-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.extra-income-title{font-size:11px;font-weight:700;color:var(--ink-2)}
+.extra-income-title small{display:block;margin-top:1px;font-size:10px;font-weight:400;font-style:italic;color:var(--ink-3)}
+.extra-income .seg button{padding:4px 10px;font-size:11px}
+.extra-income-fields{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end;margin-top:9px;padding-top:9px;border-top:1px dashed var(--rule)}
+.extra-income-fields .seg{height:31px}
+.extra-income-fields .seg button{min-width:42px}
+.extra-income .derived{margin:6px 0 0}
+
+.hito{display:grid; grid-template-columns:1fr 96px 74px 26px; gap:6px; align-items:center;
+  padding:6px 0; border-bottom:1px dashed var(--rule)}
+.hito input{padding:5px 7px; font-size:12px}
+.hito .del{border:0; background:transparent; color:var(--ink-3); cursor:pointer; font-size:15px; line-height:1; padding:4px; border-radius:4px}
+.hito .del:hover{color:var(--crit); background:var(--accent-soft)}
+.hito-head{display:grid; grid-template-columns:1fr 96px 74px 26px; gap:6px; font-size:10px;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3); margin-top:8px}
+.budget{margin-top:11px; padding:9px 11px; border-radius:6px; background:var(--surface-2);
+  border:1px solid var(--rule); font-size:11.5px; color:var(--ink-2); display:grid; gap:3px}
+.budget .line{display:flex; justify-content:space-between; gap:10px}
+.budget b{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; color:var(--ink)}
+
+/* ---------- escenarios ---------- */
+.escbar{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px}
+.esc{
+  text-align:left; cursor:pointer; font:inherit; color:var(--ink);
+  background:var(--surface); border:1px solid var(--rule); border-radius:8px;
+  padding:12px 14px; box-shadow:var(--shadow); position:relative; overflow:hidden;
+}
+.esc::before{content:""; position:absolute; inset:0 auto 0 0; width:4px; background:var(--c)}
+.esc:hover{border-color:var(--rule-strong)}
+.esc[aria-pressed="true"]{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent), var(--shadow)}
+.esc .top{display:flex; align-items:center; gap:7px; margin-left:8px}
+.esc .top .name{font-family:"Archivo",sans-serif; font-weight:700; font-size:12.5px; letter-spacing:.05em; text-transform:uppercase}
+.esc .top .tag{margin-left:auto; font-size:10.5px; color:var(--ink-3)}
+.esc .v{margin-left:8px; font-family:"Archivo",sans-serif; font-size:20px; font-weight:600; letter-spacing:-.02em; margin-top:5px; font-variant-numeric:tabular-nums}
+.esc .n{margin-left:8px; font-size:11.5px; color:var(--ink-3)}
+.esc .sel{position:absolute; top:10px; right:12px; font-size:10px; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--accent); font-weight:700; opacity:0}
+.esc[aria-pressed="true"] .sel{opacity:1}
+
+/* ---------- KPI ---------- */
+.kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:22px}
+.kpi{background:var(--surface); border:1px solid var(--rule); border-radius:8px; padding:12px 14px 13px; box-shadow:var(--shadow)}
+.kpi .k{font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); font-weight:600}
+.kpi .v{font-family:"Archivo",sans-serif; font-size:22px; font-weight:600; letter-spacing:-.02em; margin-top:5px; font-variant-numeric:tabular-nums}
+.kpi .n{font-size:11.5px; color:var(--ink-3); margin-top:2px}
+.kpi.hero{background:var(--hero-bg); border-color:var(--hero-border)}
+.kpi.hero .k, .kpi.hero .n{color:var(--hero-sub)}
+.kpi.hero .v{color:var(--hero-ink)}
+
+/* ---------- panels ---------- */
+.panel{background:var(--surface); border:1px solid var(--rule); border-radius:8px; box-shadow:var(--shadow); margin-bottom:22px; overflow:hidden}
+.panel > header{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; padding:13px 16px; border-bottom:1px solid var(--rule); background:var(--surface-2)}
+.panel > header h2{font-size:13px; font-weight:700; letter-spacing:.06em; text-transform:uppercase}
+.panel > header .note{font-size:11.5px; color:var(--ink-3); margin-left:auto}
+.panel .body{padding:16px}
+.grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(430px,1fr)); gap:0}
+.grid2 > .panel{margin-bottom:0; border-radius:0; border:0; box-shadow:none; border-right:1px solid var(--rule)}
+.grid2 > .panel:last-child{border-right:0}
+
+.blocks{display:grid; grid-template-columns:repeat(auto-fit,minmax(268px,1fr))}
+.block{padding:15px 18px; border-right:1px solid var(--rule); border-bottom:1px solid var(--rule)}
+.block:last-child{border-right:0}
+.block h3{font-size:10.5px; letter-spacing:.11em; text-transform:uppercase; color:var(--accent); font-weight:700; margin-bottom:9px}
+.dl{display:grid}
+.dl div{display:flex; justify-content:space-between; gap:14px; padding:3.5px 0; border-bottom:1px dotted var(--rule)}
+.dl div:last-child{border-bottom:0}
+.dl dt{color:var(--ink-2); font-size:12.5px}
+.dl dd{margin:0; font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; font-size:12.5px; white-space:nowrap}
+.dl .tot{border-top:1.5px solid var(--rule-strong); border-bottom:0 !important; margin-top:4px; padding-top:6px}
+.dl .tot dt{font-weight:700; color:var(--ink)}
+.pos{color:var(--good)} .neg{color:var(--crit)}
+
+/* ---------- charts ---------- */
+.chartwrap{position:relative}
+.chartwrap svg{display:block; width:100%}
+.legend{display:flex; gap:16px; flex-wrap:wrap; align-items:center; font-size:11.5px; color:var(--ink-2); padding:0 2px 8px}
+.legend span{display:inline-flex; align-items:center; gap:6px}
+.legend i{width:10px; height:10px; border-radius:2px; display:inline-block; flex:none}
+.legend .far{margin-left:auto; color:var(--ink-3)}
+.tip{position:absolute; pointer-events:none; opacity:0; transition:opacity .1s;
+  background:var(--surface); border:1px solid var(--rule-strong); border-radius:6px;
+  box-shadow:0 6px 20px -8px rgba(0,0,0,.35); padding:8px 10px; font-size:11.5px; min-width:186px; z-index:5}
+.tip h4{font-family:"Archivo",sans-serif; font-size:11.5px; margin:0 0 5px; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-3)}
+.tip .r{display:flex; justify-content:space-between; gap:12px; padding:1.5px 0}
+.tip .r b{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; font-weight:500}
+.tip .r.sep{border-top:1px solid var(--rule); margin-top:4px; padding-top:4px}
+
+/* composición */
+.compo{display:grid; gap:12px}
+.compo .keys{display:grid; grid-template-columns:repeat(auto-fit,minmax(178px,1fr)); gap:8px}
+.compo .key{display:flex; gap:8px; align-items:flex-start; padding:8px 10px; border:1px solid var(--rule); border-radius:6px; background:var(--surface-2)}
+.compo .key i{width:10px; height:10px; border-radius:2px; margin-top:4px; flex:none}
+.compo .key .t{font-size:11.5px; color:var(--ink-2); line-height:1.35}
+.compo .key .m{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; font-size:13px; color:var(--ink); font-weight:500}
+
+/* ---------- tables ---------- */
+.scroller{overflow-x:auto; max-height:520px; overflow-y:auto}
+table{border-collapse:collapse; width:100%; font-size:12px}
+th,td{padding:5px 9px; text-align:right; white-space:nowrap}
+th:first-child, td:first-child{text-align:left}
+thead th{position:sticky; top:0; z-index:2; background:var(--surface-2); font-size:10px;
+  letter-spacing:.07em; text-transform:uppercase; color:var(--ink-3); font-weight:700; border-bottom:1px solid var(--rule-strong)}
+tbody td{border-bottom:1px solid var(--rule); font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+tbody tr:hover td{background:var(--surface-2)}
+tbody tr.sale td:first-child{box-shadow:inset 3px 0 0 var(--s-ingreso)}
+tbody th{text-align:left; font-weight:500; color:var(--ink-2); font-size:12px;
+  letter-spacing:0; text-transform:none; position:static; background:transparent; border-bottom:1px solid var(--rule)}
+tfoot td{position:sticky; bottom:0; background:var(--surface-2); font-weight:700;
+  border-top:1.5px solid var(--rule-strong); font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+table.cmp tbody tr.hi td, table.cmp tbody tr.hi th{background:var(--accent-soft); font-weight:700}
+tbody tr.rowlink{cursor:pointer}
+tbody tr.rowlink.act td, tbody tr.rowlink.act th{background:var(--accent-soft); font-weight:600}
+tbody tr.rowlink.act td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+table.cmp td{font-size:12.5px}
+.dot{display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:6px; vertical-align:-1px}
+.chip{display:inline-flex; align-items:center; gap:5px; padding:1.5px 8px; border-radius:999px;
+  font-size:11px; font-weight:600; font-family:"Public Sans",sans-serif}
+.chip.ok{background:color-mix(in srgb, var(--good) 15%, transparent); color:var(--good)}
+.chip.wait{background:color-mix(in srgb, var(--s-caja) 15%, transparent); color:var(--s-caja)}
+.chip.no{background:color-mix(in srgb, var(--crit) 15%, transparent); color:var(--crit)}
+
+/* ---------- conformación de lista de precios ---------- */
+.price-list-head{align-items:center !important}
+.price-list-head .note{margin-left:0 !important;flex:1}
+.price-list-switch{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;color:var(--ink-2);cursor:pointer}
+.price-list-switch input{accent-color:var(--accent)}
+.price-list-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 16px;font-size:11.5px;border-bottom:1px solid var(--rule)}
+.price-list-meta strong{color:var(--accent)}
+.price-list-status{color:var(--ink-2)}
+.price-list-status[data-tone="warn"]{color:var(--warn)}
+.price-list-table{min-width:880px}
+.price-list-table td{padding:10px 12px;vertical-align:middle}
+.price-list-table .price-name{min-width:170px;max-width:280px;font-family:"Public Sans",sans-serif}
+.price-list-table input{padding:5px 7px;font-size:12px;text-align:right}
+.price-list-table input.price-name{text-align:left}
+.price-quantity,.price-unit{display:flex;align-items:center;justify-content:flex-end;gap:6px}
+.price-quantity input{width:62px}
+.price-quantity input[data-category-field="pct"]{width:56px;border-style:dashed;color:var(--ink-2)}
+.price-unit input{width:112px}
+.price-unit .seg button{padding:4px 7px;font-size:10.5px}
+.price-equivalent{display:block;font-size:10.5px;color:var(--ink-3);margin-top:3px}
+.price-share{display:flex;align-items:center;justify-content:flex-end;gap:7px}
+.price-share-track{width:42px;height:5px;overflow:hidden;border-radius:4px;background:var(--rule)}
+.price-share-track i{display:block;height:100%;background:var(--accent)}
+.price-share span{min-width:31px;font-size:11px}
+.price-list-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:11px 16px}
+.price-list-actions .hint{margin:0}
+.price-delete{border:0;background:transparent;color:var(--ink-3);cursor:pointer;font-size:17px;padding:4px 7px;border-radius:4px}
+.price-delete:hover{color:var(--crit);background:var(--accent-soft)}
+.price-empty{text-align:center !important;padding:23px !important;color:var(--ink-3);font-family:"Public Sans",sans-serif !important;white-space:normal}
+.price-unassigned td{background:var(--surface-2);color:var(--ink-2)}
+.price-total-summary{font-size:10.5px;color:var(--ink-2);font-weight:400;white-space:normal;max-width:220px;margin-left:auto}
+.price-reference-cell{background:var(--surface-2)}
+.price-reference-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.price-reference-row input.txt{width:160px;text-align:left}
+.price-reference-row input[data-reference-field="valor"]{width:125px}
+.price-reference-row label{display:inline-flex;align-items:center;gap:4px;font:11px "Public Sans",sans-serif;color:var(--ink-2)}
+.price-reference-note{font:11px "Public Sans",sans-serif;color:var(--ink-3);white-space:normal;margin:6px 0}
+#priceListPanel button:disabled{cursor:not-allowed;opacity:.5}
+#i_pvp[readonly]{background:var(--surface-2);color:var(--accent)}
+.price-delete-dialog{padding:0;color:var(--ink);max-width:440px}
+.price-delete-dialog:not([open]){display:none}
+.price-delete-dialog::backdrop{background:rgba(10,16,12,.55)}
+.price-delete-dialog .dbody{padding:8px 18px}
+.price-delete-dialog .btn.danger{background:var(--crit);border-color:var(--crit);color:#fff}
+
+.alert{display:flex; gap:9px; align-items:flex-start; padding:10px 13px; border-radius:6px; font-size:12.5px; margin-bottom:14px;
+  background:color-mix(in srgb, var(--warn) 12%, transparent);
+  border:1px solid color-mix(in srgb, var(--warn) 34%, transparent); color:var(--ink)}
+.alert.crit{background:color-mix(in srgb, var(--crit) 11%, transparent); border-color:color-mix(in srgb, var(--crit) 32%, transparent)}
+
+footer.foot{padding:0 24px 40px; color:var(--ink-3); font-size:11.5px; max-width:74ch}
+
+/* ---------- configurador ---------- */
+.printhead{display:none}
+.overlay{position:fixed; inset:0; z-index:90; background:rgba(10,16,12,.55); display:grid; place-items:center; padding:24px}
+.dialog{width:min(720px,100%); max-height:88vh; display:flex; flex-direction:column;
+  background:var(--surface); border:1px solid var(--rule-strong); border-radius:10px;
+  box-shadow:0 24px 60px -20px rgba(0,0,0,.55); overflow:hidden}
+.dialog > header{display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid var(--rule); background:var(--surface-2)}
+.dialog > header h2{font-size:13px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; margin-right:auto}
+.dialog > footer{display:flex; gap:9px; justify-content:flex-end; padding:12px 16px; border-top:1px solid var(--rule); background:var(--surface-2)}
+.dbody{overflow-y:auto; padding:4px 16px 16px}
+.cfgroup{padding:14px 0 4px; border-bottom:1px solid var(--rule)}
+.cfgroup:last-child{border-bottom:0}
+.cfgroup h3{font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); font-weight:700; margin-bottom:8px}
+.cfgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:9px 12px}
+.cfgrid .f label{font-size:11px}
+.cfgrid input, .cfgrid textarea{font-family:"Public Sans",sans-serif; font-size:13px; width:100%;
+  padding:6px 8px; border-radius:5px; border:1px solid var(--field-rule); background:var(--field); color:var(--ink)}
+.cfgrid textarea{min-height:92px; resize:vertical; line-height:1.5}
+.cfgrid .wide{grid-column:1/-1}
+.dialog .hint{margin:10px 0 0}
+
+@media print{
+  .printhead{display:block; padding:0 24px 14px; border-bottom:1px solid #ccc; margin-bottom:14px}
+  .printhead .co{font-family:"Archivo",sans-serif; font-size:15px; font-weight:700}
+  .printhead .li{font-size:11.5px; color:#555; margin-top:2px}
+  .topbar, .overlay, .price-delete-dialog{display:none !important}
+}
+
+@media (max-width:1080px){
+  .shell{grid-template-columns:1fr}
+  .rail{position:static; height:auto; border-right:0; border-bottom:1px solid var(--rule)}
+  .escbar{grid-template-columns:1fr}
+}
+@media print{
+  .rail, .topbar .tools, .projbar, .menu{display:none}
+  .shell.norail{grid-template-columns:1fr}
+  .shell{grid-template-columns:1fr}
+  body{background:#fff}
+  .panel{break-inside:avoid; box-shadow:none}
+  .scroller{max-height:none; overflow:visible}
+  .price-list-switch,.price-list-actions,.price-delete,.price-reference-toggle{display:none !important}
+  #priceListPanel.price-list-empty{display:none}
+  .price-list-table{min-width:0;table-layout:auto}
+  .price-list-table th,.price-list-table td{white-space:normal;padding:5px;font-size:10px}
+  .price-list-table input{border:0;background:transparent;padding:0;font-size:10px}
+  .price-list-table .price-name{min-width:0;width:130px}
+  .price-quantity input{width:35px}
+  .price-quantity input[data-category-field="pct"]{width:35px}
+  .price-unit{gap:3px;flex-wrap:wrap}
+  .price-unit input{width:80px}
+  .price-unit .seg{border:0}
+  .price-unit .seg button{display:none}
+  .price-unit .seg button[aria-pressed="true"]{display:block;background:transparent;color:inherit;padding:0}
+  .price-share-track{display:none}
+  .price-reference-cell{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+<style>html{accent-color:#086866}body{font-family:Inter,system-ui,sans-serif}button,input,select,textarea{font-family:inherit}button:focus-visible,a:focus-visible{outline:3px solid #d68015;outline-offset:3px}.demo-mark{display:inline-flex;align-items:center;gap:7px;color:#106961;background:#e9fbf2;border:1px solid #add9c8;border-radius:20px;padding:5px 11px;font:650 11px/1.4 system-ui;letter-spacing:.025em}.demo-mark:before{content:"";width:7px;height:7px;border-radius:50%;background:#19a377}#side,.sidebar,.rail{box-shadow:4px 0 28px #12362b10}button{transition:background-color .14s,box-shadow .14s}dialog,.modal,.card{border-radius:14px}button:active{transform:translateY(1px)}@media print{.demo-mark{display:none}}</style><style id="edicion-portafolio">:root{--demo-h:263;--nav:#163b41;--nav2:#205058;--nav3:#25484f;--blue:#196c7a;--blue-l:#d9f1ed}body{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}body[data-theme=dark]{--bg:#0c1c22;--surface:#152c32;--surface2:#203d42;--accent:#75d8bd;--line:#37525a}.card,.panel,.kpi,.stat,.project-card,.obra-card,.booking-card,.room-main,.inventory-card,.record-card{border-radius:16px;box-shadow:0 5px 17px #103b370b}input:not([type=checkbox]):not([type=radio]),textarea,select{border-radius:7px}h1,h2,.kpi-val,.stat-value,.amount{letter-spacing:-.035em}.topbar,.masthead,.sidebar,#side,.side,.rail{background-image:linear-gradient(142deg,hsl(263 36% 48% / .10),transparent 55%)}.sidebar,.rail,#side{border-inline-end:1px solid #597e792e}.toolbar button,.actions button,.primary-btn,.btn-primary,.btn{border-radius:9px}tbody tr:hover{background-color:hsl(263 45% 50% / .06)}#demoLocalGuide{position:fixed;bottom:12px;right:12px;z-index:85;display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border:1px solid #93c3b4;border-radius:22px;background:#f2fff9;color:#164e45;font:650 12px/1.3 system-ui;text-decoration:none;box-shadow:0 2px 16px #052e2b21}#demoLocalGuide:before{content:"";width:7px;height:7px;border-radius:50%;background:#26886c}@media print{#demoLocalGuide{display:none!important}}@media(max-width:650px){#demoLocalGuide{bottom:5px;right:5px;font-size:10px}}</style></head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <span class="mark" aria-hidden="true">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--on-accent)" stroke-width="1.3">
+        <path d="M1.4 4.2 8 1.4l6.6 2.8L8 7 1.4 4.2Z"/><path d="M1.4 8 8 10.8 14.6 8"/><path d="M1.4 11.6 8 14.4l6.6-2.8"/>
+      </svg>
+    </span>
+    <h1 data-t="appName">Evaluador de Proyectos Broker</h1>
+    <span class="sub" data-t="tagline">Evaluador de negocios broker</span>
+  </div>
+  <div class="projbar">
+    <button type="button" class="btn icon" id="btnRail" aria-pressed="false" title="Ocultar el panel de parámetros" aria-label="Ocultar el panel de parámetros">☰</button>
+    <span class="sepv" aria-hidden="true"></span>
+    <select id="projSelect" aria-label="Proyecto activo"></select>
+    <button type="button" class="btn mini" id="btnNew">+ Nuevo</button>
+    <button type="button" class="btn mini" id="btnDup">Duplicar</button>
+    <button type="button" class="btn mini" id="btnDel">Eliminar</button>
+  </div>
+  <div class="tools">
+    <span class="workspace-control" id="mesaWorkspaceControl" hidden>
+      <select id="mesaWorkspaceSelect" aria-label="Seleccionar espacio de trabajo" hidden></select>
+      <span class="workspace-badge" id="mesaWorkspaceBadge"></span>
+    </span>
+    <span class="readonly-badge" id="mesaReadonlyBadge">Solo lectura</span>
+    <span class="sync-status" id="vicaper-sync-status" data-tone="saving">Conectando…</span>
+    <div class="seg" role="group" aria-label="Unidad de despliegue">
+      <button type="button" id="uClp" aria-pressed="true">CLP</button>
+      <button type="button" id="uUf" aria-pressed="false">UF</button>
+    </div>
+    <div class="menuwrap">
+      <button type="button" class="btn" id="btnMenu" aria-expanded="false" aria-haspopup="true">Más ▾</button>
+      <div class="menu" id="menu" hidden>
+        <button type="button" id="mCopy">Copiar flujo al portapapeles</button>
+        <button type="button" id="mCsv">Descargar flujo (.csv)</button>
+        <hr>
+        <button type="button" id="mCfg">Configurar textos y marca…</button>
+        <hr>
+        <button type="button" id="mExport">Exportar respaldo de proyectos (.json)</button>
+        <button type="button" id="mImport">Importar respaldo…</button>
+        <hr>
+        <button type="button" id="mReset">Restablecer este proyecto</button>
+        <div class="msg" id="menuMsg">Tus proyectos quedan guardados en este navegador. Exporta un respaldo para llevarlos a otro equipo.</div>
+      </div>
+    </div>
+    <button type="button" class="btn" id="btnExecutive">Resumen ejecutivo</button>
+    <button type="button" class="btn primary" id="btnPrint">Imprimir informe</button>
+  </div>
+  <input type="file" id="fileImport" accept="application/json,.json" hidden>
+</div>
+
+<div class="shell">
+<aside class="rail">
+  <fieldset>
+    <legend data-t="lPredio">Detalles del predio</legend>
+    <p class="hint">Datos del terreno que aporta el propietario.</p>
+    <div class="row">
+      <div class="f"><label for="i_nombre">Predio</label><input class="txt" type="text" id="i_nombre"></div>
+      <div class="f"><label for="i_region">Región / Comuna</label><input class="txt" type="text" id="i_region"></div>
+    </div>
+    <div class="row">
+      <div class="f"><label for="i_ha">Superficie <span class="u">(Ha)</span></label><input type="text" id="i_ha" inputmode="decimal"></div>
+      <div class="f"><label for="i_lotes">Cantidad de lotes</label><input type="text" id="i_lotes" inputmode="numeric"></div>
+    </div>
+    <div class="row">
+      <div class="f">
+        <div class="field-label-row">
+          <label for="i_precio">Precio original</label>
+          <select id="i_precioModo" class="land-price-mode" aria-label="Forma de ingresar el precio original">
+            <option value="clp_total">CLP total</option>
+            <option value="uf_total">UF total</option>
+            <option value="uf_m2">UF/m²</option>
+          </select>
+        </div>
+        <input type="text" id="i_precio" inputmode="numeric" aria-describedby="d_precio">
+        <span class="derived" id="d_precio"></span>
+      </div>
+      <div class="f"><label for="i_uf">Valor UF <span class="u">(CLP)</span></label><input type="text" id="i_uf" inputmode="numeric"></div>
+    </div>
+    <p class="derived" id="d_predio"></p>
+  </fieldset>
+
+  <fieldset>
+    <legend data-t="lNegocio">Negocio broker</legend>
+    <div class="row">
+      <div class="f"><label for="i_pvp" id="pvpLabel">PVP unitario <span class="u">(CLP/lote)</span></label><input type="text" id="i_pvp" inputmode="numeric" aria-describedby="pvpListHint"><span class="derived" id="pvpListHint" hidden></span></div>
+      <div class="f"><label for="i_vel">Velocidad de venta <span class="u">(% stock/mes)</span></label><input type="text" id="i_vel" inputmode="decimal"></div>
+    </div>
+    <div class="row">
+      <div class="f"><label for="i_iniVenta">Inicio de ventas <span class="u">(mes)</span></label><input type="text" id="i_iniVenta" inputmode="numeric"></div>
+      <div class="f"><label for="i_com">Gastos comercialización <span class="u">(%)</span></label><input type="text" id="i_com" inputmode="decimal"></div>
+    </div>
+    <div class="row one">
+      <div class="f"><label for="i_hab">Gastos de habilitación <span class="u">(% s/ venta — presupuesto de obras)</span></label><input type="text" id="i_hab" inputmode="decimal"></div>
+    </div>
+    <p class="derived" id="d_negocio"></p>
+  </fieldset>
+
+  <fieldset>
+    <legend>Ingresos adicionales</legend>
+    <p class="hint">Se suman a la venta y se consideran ganancia del negocio.</p>
+    <div class="extra-income-list">
+      <div class="extra-income">
+        <div class="extra-income-head">
+          <div class="extra-income-title">💧 Venta de agua<small>Ingreso adicional cobrado con cada lote</small></div>
+          <div class="seg" role="group" aria-label="¿Se vende agua con cada lote?">
+            <button type="button" id="aguaNo" aria-pressed="true">No</button>
+            <button type="button" id="aguaSi" aria-pressed="false">Sí</button>
+          </div>
+        </div>
+        <div class="extra-income-fields" id="aguaFields" hidden>
+          <div class="f"><label for="i_agua">Valor por lote</label><input type="text" id="i_agua" inputmode="decimal"></div>
+          <div class="f"><label>Moneda</label><div class="seg" role="group" aria-label="Moneda de la venta de agua">
+            <button type="button" id="aguaClp" aria-pressed="true">CLP</button>
+            <button type="button" id="aguaUf" aria-pressed="false">UF</button>
+          </div></div>
+        </div>
+        <p class="derived" id="d_agua" hidden></p>
+      </div>
+      <div class="extra-income">
+        <div class="extra-income-head">
+          <div class="extra-income-title">🏠 Edificación<small>Ingreso adicional por venta de una edificación</small></div>
+          <div class="seg" role="group" aria-label="¿Se vende una edificación?">
+            <button type="button" id="edificacionNo" aria-pressed="true">No</button>
+            <button type="button" id="edificacionSi" aria-pressed="false">Sí</button>
+          </div>
+        </div>
+        <div class="extra-income-fields" id="edificacionFields" hidden>
+          <div class="f"><label for="i_edificacion">Valor total</label><input type="text" id="i_edificacion" inputmode="decimal"></div>
+          <div class="f"><label>Moneda</label><div class="seg" role="group" aria-label="Moneda de la edificación">
+            <button type="button" id="edificacionClp" aria-pressed="true">CLP</button>
+            <button type="button" id="edificacionUf" aria-pressed="false">UF</button>
+          </div></div>
+        </div>
+        <p class="derived" id="d_edificacion" hidden></p>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend data-t="lVenta">Condición de venta unitaria</legend>
+    <p class="hint">Pie al contado y el saldo en cuotas fijas iguales.</p>
+    <div class="row">
+      <div class="f"><label for="i_pie">Pie <span class="u">(%)</span></label><input type="text" id="i_pie" inputmode="decimal"></div>
+      <div class="f"><label for="i_cuotas">Cuotas fijas <span class="u">(N° meses)</span></label><input type="text" id="i_cuotas" inputmode="numeric"></div>
+    </div>
+    <p class="derived" id="d_venta"></p>
+  </fieldset>
+
+  <fieldset>
+    <legend data-t="lEscenarios">Escenarios</legend>
+    <p class="hint">Los escenarios conservador y optimista se generan moviendo estos dos parámetros sobre el caso base.</p>
+    <div class="row">
+      <div class="f"><label for="i_sensVel">Sensibilidad velocidad <span class="u">(± %)</span></label><input type="text" id="i_sensVel" inputmode="decimal"></div>
+      <div class="f"><label for="i_sensPvp">Sensibilidad PVP <span class="u">(± %)</span></label><input type="text" id="i_sensPvp" inputmode="decimal"></div>
+    </div>
+    <p class="derived" id="d_esc"></p>
+  </fieldset>
+
+  <fieldset>
+    <legend data-t="lAportante">Pago al aportante</legend>
+    <p class="hint">Cuándo recibe su dinero el dueño del terreno. Esto define cuánta caja queda libre para obras.</p>
+    <div class="row one">
+      <div class="f"><label for="i_propModo">Modalidad</label>
+        <select id="i_propModo">
+          <option value="prorrata">A prorrata de la recaudación</option>
+          <option value="cuotas">Cuotas mensuales fijas</option>
+          <option value="contado">Contado (compra del predio)</option>
+        </select>
+      </div>
+    </div>
+    <div class="row" id="propProrrata">
+      <div class="f"><label for="i_propPct">Retención al <span data-term="tAportante">aportante</span> <span class="u">(% de cada recaudación)</span></label><input type="text" id="i_propPct" inputmode="decimal"></div>
+      <div class="f"><label for="i_propDesde">Comienza en el mes</label><input type="text" id="i_propDesde" inputmode="numeric"></div>
+    </div>
+    <div class="row" id="propCuotas" hidden>
+      <div class="f"><label for="i_propN">N° de cuotas</label><input type="text" id="i_propN" inputmode="numeric"></div>
+      <div class="f"><label for="i_propMes">Primera cuota <span class="u">(mes)</span></label><input type="text" id="i_propMes" inputmode="numeric"></div>
+    </div>
+    <div class="row one" id="propContado" hidden>
+      <div class="f"><label for="i_propMesC">Mes del pago</label><input type="text" id="i_propMesC" inputmode="numeric"></div>
+    </div>
+    <p class="derived" id="d_prop"></p>
+  </fieldset>
+
+  <fieldset>
+    <legend data-t="lHitos">Hitos de obra y otros egresos</legend>
+    <p class="hint">Modo <b>auto</b>: la herramienta calcula el primer mes en que la caja alcanza. Modo <b>fijo</b>: escribe el número de mes y la caja puede quedar negativa.</p>
+    <div class="hito-head"><span>Hito</span><span>Costo CLP</span><span>Mes</span><span></span></div>
+    <div id="hitosList"></div>
+    <button type="button" class="btn mini" id="btnAddHito" style="margin-top:9px">+ Agregar hito</button>
+    <div class="budget" id="budgetBox"></div>
+  </fieldset>
+</aside>
+
+<main>
+  <div class="printhead" id="printhead"></div>
+  <section class="panel" id="carteraPanel" hidden>
+    <header>
+      <h2 data-t="sCartera">Cartera de proyectos</h2>
+      <span class="note" id="noteCartera"></span>
+    </header>
+    <div class="scroller"><table id="tCartera"></table></div>
+  </section>
+
+  <div class="escbar" id="escbar"></div>
+
+  <section class="panel">
+    <header>
+      <h2 data-t="sEscenarios">Comparativo de escenarios</h2>
+      <span class="note" id="noteEsc"></span>
+    </header>
+    <div class="scroller"><table class="cmp" id="tEsc"></table></div>
+    <div class="body" style="border-top:1px solid var(--rule)">
+      <div class="legend" id="legEsc"></div>
+      <div class="chartwrap" id="cwEsc"><div class="tip" id="tipEsc"></div></div>
+    </div>
+  </section>
+
+  <div id="alerts"></div>
+  <div class="kpis" id="kpis"></div>
+
+  <section class="panel" id="priceListPanel">
+    <header class="price-list-head">
+      <h2 data-t="sListaPrecios">Conformación Lista Precios</h2>
+      <span class="note">Desglose por tipo / categoría de lote · escenario base</span>
+      <label class="price-list-switch"><input type="checkbox" id="usePriceList"> Usar lista en el cálculo</label>
+    </header>
+    <div class="price-list-meta">
+      <span id="priceListUf"></span>
+      <span class="price-list-status" id="priceListStatus" role="status"></span>
+    </div>
+    <div class="scroller">
+      <table class="price-list-table" aria-label="Conformación de la lista de precios">
+        <thead><tr><th scope="col">Categoría de lote</th><th scope="col">Cantidad / % tot.</th><th scope="col">Precio unitario ($ / UF)</th><th scope="col">Acumulado venta ($)</th><th scope="col">% del total</th><th scope="col">Precios</th><th scope="col"><span class="price-reference-note">Acción</span></th></tr></thead>
+        <tbody id="priceListBody"></tbody>
+        <tfoot id="priceListTotals"></tfoot>
+      </table>
+    </div>
+    <div class="price-list-actions">
+      <button type="button" class="btn mini" id="addPriceCategory">+ Agregar categoría de lote</button>
+      <span class="hint">La lista define el PVP promedio. Agua y edificación se suman por separado.</span>
+    </div>
+  </section>
+
+  <section class="panel">
+    <header>
+      <h2 data-t="sPropuesta">Propuesta de comercialización</h2>
+      <span class="note" id="noteUnidad"></span>
+    </header>
+    <div class="blocks" id="blocks"></div>
+  </section>
+
+  <section class="panel">
+    <header>
+      <h2 data-t="sCompo">En qué se reparte la venta / ingreso</h2>
+      <span class="note">Cada peso de la venta total, por destino.</span>
+    </header>
+    <div class="body"><div class="compo">
+      <div class="chartwrap" id="cwCompo"></div>
+      <div class="keys" id="compoKeys"></div>
+    </div></div>
+  </section>
+
+  <section class="panel">
+    <header>
+      <h2 data-t="sFlujo">Flujo mensual — recaudación y egresos</h2>
+      <span class="note">Pasa el cursor por el gráfico para ver el detalle del mes.</span>
+    </header>
+    <div class="body">
+      <div class="legend">
+        <span><i style="background:var(--s-ingreso)"></i>Recaudación (pie + cuotas fijas)</span>
+        <span><i style="background:var(--s-egreso)"></i>Egresos (comercialización + <span data-term="tAportante">aportante</span> + obras)</span>
+        <span class="far">Eje horizontal: mes del proyecto</span>
+      </div>
+      <div class="chartwrap" id="cw1"><div class="tip" id="tip1"></div></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <header>
+      <h2 data-t="sOrigen">Recaudación por origen</h2>
+      <span class="note">Cuánto entra por pies y cuánto por cuotas fijas cada mes.</span>
+    </header>
+    <div class="body">
+      <div class="legend">
+        <span><i style="background:var(--s-ingreso)"></i>Pies</span>
+        <span><i style="background:var(--s-caja)"></i>Cuotas fijas</span>
+      </div>
+      <div class="chartwrap" id="cwOrig"><div class="tip" id="tipOrig"></div></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <header>
+      <h2 data-t="sCaja">Caja acumulada disponible para obras</h2>
+      <span class="note" id="noteCaja"></span>
+    </header>
+    <div class="body">
+      <div class="legend">
+        <span><i style="background:var(--s-caja)"></i>Caja acumulada después de comisiones y pagos al <span data-term="tAportante">aportante</span></span>
+        <span><i style="background:var(--s-egreso);border-radius:0;transform:rotate(45deg)"></i>Ejecución de un hito de obra</span>
+      </div>
+      <div class="chartwrap" id="cw2"><div class="tip" id="tip2"></div></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <header>
+      <h2 data-t="sColoc">Colocación de lotes</h2>
+      <span class="note" id="noteColoc"></span>
+    </header>
+    <div class="body">
+      <div class="legend">
+        <span><i style="background:var(--s-ingreso)"></i>Lotes vendidos acumulados</span>
+        <span><i style="background:var(--ink-3)"></i>Stock por colocar</span>
+      </div>
+      <div class="chartwrap" id="cwColoc"><div class="tip" id="tipColoc"></div></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <header>
+      <h2 data-t="sPagos">Pagos al aportante</h2>
+      <span class="note" id="noteProp"></span>
+    </header>
+    <div class="body">
+      <div class="legend">
+        <span><i style="background:var(--s-caja)"></i>Acumulado recibido por el <span data-term="tAportante">aportante</span></span>
+        <span><i style="background:var(--ink-3)"></i>Total comprometido</span>
+      </div>
+      <div class="chartwrap" id="cwProp"><div class="tip" id="tipProp"></div></div>
+      <div class="legend" style="padding-top:12px"><span><i style="background:var(--s-ingreso)"></i>Pago de cada mes</span></div>
+      <div class="chartwrap" id="cwPropBar"></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <header>
+      <h2 data-t="sObras">Programa de obras</h2>
+      <span class="note">Mes estimado en que los fondos permiten ejecutar cada hito.</span>
+    </header>
+    <div class="scroller"><table id="tHitos"></table></div>
+  </section>
+
+  <section class="panel">
+    <header>
+      <h2 data-t="sTabla">Flujo de caja mensual detallado</h2>
+      <span class="note" id="noteTabla"></span>
+    </header>
+    <div class="scroller"><table id="tFlujo"></table></div>
+  </section>
+</main>
+</div>
+
+<dialog class="dialog price-delete-dialog" id="priceDeleteDialog" aria-labelledby="priceDeleteTitle" aria-describedby="priceDeleteText">
+  <header><h2 id="priceDeleteTitle">Confirmar eliminación</h2></header>
+  <div class="dbody"><p id="priceDeleteText"></p></div>
+  <footer><button type="button" class="btn" id="cancelPriceDelete" autofocus>Cancelar</button><button type="button" class="btn danger" id="confirmPriceDelete">Eliminar</button></footer>
+</dialog>
+
+<div class="overlay" id="cfgOverlay" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="cfgTitle">
+    <header>
+      <h2 id="cfgTitle">Textos y marca</h2>
+      <button type="button" class="btn icon" id="cfgClose" aria-label="Cerrar">✕</button>
+    </header>
+    <div class="dbody">
+      <p class="hint">Cambia aquí cómo se llama la herramienta y cómo se titula cada sección. Los textos son los mismos para todos tus proyectos y viajan en el respaldo .json.</p>
+      <div id="cfgBody"></div>
+    </div>
+    <footer>
+      <button type="button" class="btn" id="cfgReset">Restablecer textos</button>
+      <button type="button" class="btn primary" id="cfgDone">Listo</button>
+    </footer>
+  </div>
+</div>
+
+<footer class="foot">
+  <p data-t="footer">Modelo de estimación para negociación. La recaudación supone cumplimiento íntegro de las condiciones de venta pactadas (sin morosidad, prepagos ni desistimientos) y no incluye reajustes, IVA, intereses ni gastos notariales o de subdivisión. Los escenarios conservador y optimista son sensibilidades sobre la velocidad de venta y el precio, no proyecciones de mercado. Verifique con su asesor antes de comprometer cifras con el aportante.</p>
+</footer>
+
+<script>
+"use strict";
+
+/* ============================== estado ============================== */
+const DEFAULTS = {"nombre":"Predio Mirador de Bruma","region":"Maule","ha":24,"lotes":38,"precio":324000000,"precioModo":"clp_total","precioEntrada":null,"uf":40000,"pvp":24500000,"vel":2,"iniVenta":1,"com":14,"hab":5,"usarListaPrecios":false,"categoriasPrecios":[],"vendeAgua":false,"precioVentaAgua":0,"precioAguaModoUF":false,"precioVentaAguaUFFijo":0,"vendeEdificacion":false,"valorEdificacion":0,"edificacionModoUF":false,"valorEdificacionUFFijo":0,"pie":30,"cuotas":18,"sensVel":20,"sensPvp":8,"propModo":"prorrata","propPct":65,"propDesde":1,"propN":18,"propMes":1,"propMesC":1,"hitos":[{"n":"Diseño y topografía","c":4800000,"m":"auto"},{"n":"Apertura de caminos","c":17600000,"m":"auto"},{"n":"Factibilidad eléctrica","c":9600000,"m":"auto"}]};
+const TEXT_DEF = {
+  appName:"Evaluador de Proyectos Broker",
+  tagline:"Evaluador de negocios broker",
+  empresa:"",
+  tAportante:"aportante",
+  tPropietario:"propietario",
+  lPredio:"Detalles del predio",
+  lNegocio:"Negocio broker",
+  lVenta:"Condición de venta unitaria",
+  lEscenarios:"Escenarios",
+  lAportante:"Pago al aportante",
+  lHitos:"Hitos de obra y otros egresos",
+  sCartera:"Cartera de proyectos",
+  sEscenarios:"Comparativo de escenarios",
+  sPropuesta:"Propuesta de comercialización",
+  sListaPrecios:"Conformación Lista Precios",
+  sCompo:"En qué se reparte la venta / ingreso",
+  sFlujo:"Flujo mensual — recaudación y egresos",
+  sOrigen:"Recaudación por origen",
+  sCaja:"Caja acumulada disponible para obras",
+  sColoc:"Colocación de lotes",
+  sPagos:"Pagos al aportante",
+  sObras:"Programa de obras",
+  sTabla:"Flujo de caja mensual detallado",
+  bPredio:"Detalles del predio",
+  bNegocio:"Detalles del negocio",
+  bVenta:"Condición de la venta unitaria",
+  bResumen:"Resumen del proyecto general",
+  kVenta:"Venta total estimada",
+  kMargen:"Margen bruto",
+  kResultado:"Resultado total aportante",
+  kPresupuesto:"Presupuesto de obras",
+  kCaja:"Caja máxima disponible",
+  kObras:"Obras completas en",
+  footer:"Modelo de estimación para negociación. La recaudación supone cumplimiento íntegro de las condiciones de venta pactadas (sin morosidad, prepagos ni desistimientos) y no incluye reajustes, IVA, intereses ni gastos notariales o de subdivisión. Los escenarios conservador y optimista son sensibilidades sobre la velocidad de venta y el precio, no proyecciones de mercado. Verifique con su asesor antes de comprometer cifras con el aportante."
+};
+const CFG_GROUPS = [
+  ["Marca", [["appName","Nombre de la herramienta"],["tagline","Bajada o descripción"],["empresa","Empresa (aparece al imprimir)"]]],
+  ["Terminología", [["tAportante","Cómo llamas a quien aporta el terreno"],["tPropietario","Cómo lo llamas en el resumen del proyecto"]]],
+  ["Panel de parámetros", [["lPredio","Grupo 1"],["lNegocio","Grupo 2"],["lVenta","Grupo 3"],["lEscenarios","Grupo 4"],["lAportante","Grupo 5"],["lHitos","Grupo 6"]]],
+  ["Títulos de las secciones", [["sEscenarios","Comparativo"],["sListaPrecios","Lista de precios"],["sPropuesta","Propuesta"],["sCompo","Reparto de la venta"],["sFlujo","Flujo mensual"],["sOrigen","Recaudación por origen"],["sCaja","Caja para obras"],["sColoc","Colocación"],["sPagos","Pagos al aportante"],["sObras","Programa de obras"],["sTabla","Tabla de flujo"]]],
+  ["Bloques de la propuesta", [["bPredio","Bloque 1"],["bNegocio","Bloque 2"],["bVenta","Bloque 3"],["bResumen","Bloque 4"]]],
+  ["Indicadores del encabezado", [["kVenta","Indicador 1"],["kMargen","Indicador 2"],["kResultado","Indicador 3 (destacado)"],["kPresupuesto","Indicador 4"],["kCaja","Indicador 5"],["kObras","Indicador 6"]]],
+  ["Nota al pie", [["footer","Texto legal del pie de página"]]]
+];
+let TX = Object.assign({}, TEXT_DEF);
+const T = k => (TX[k] !== undefined && TX[k] !== null) ? TX[k] : (TEXT_DEF[k] || "");
+const Tcap = k => { const s = T(k); return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; };
+function applyTexts(){
+  document.querySelectorAll("[data-t]").forEach(el => { el.textContent = T(el.dataset.t); });
+  document.querySelectorAll("[data-term]").forEach(el => { el.textContent = T(el.dataset.term); });
+  try { document.title = T("appName") || "Evaluador de Proyectos Broker"; } catch(e){}
+  const ph = document.getElementById("printhead");
+  if (ph) ph.innerHTML = `<div class="co">${esc(T("empresa") || T("appName"))}</div>
+    <div class="li">${esc(T("tagline"))}${S && S.nombre ? " · " + esc(S.nombre) : ""}${S && S.region ? " · " + esc(S.region) : ""}</div>`;
+}
+
+const clone = o => JSON.parse(JSON.stringify(o));
+const LEGACY_LSKEY = 'demo-broker-v1';
+let LSKEY = 'demo-broker-v2';
+const uid = () => "p" + Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-4);
+
+let STORE = {projects:[], activeId:null, unit:"CLP", railHidden:false, texts:{}};
+let S = clone(DEFAULTS);
+let UNIT = "CLP";
+let ESC_SEL = "base";
+const MAXH = 240;
+
+function makeProject(base, nombre){
+  const st = normalizeProjectState(base || DEFAULTS);
+  if (nombre) st.nombre = nombre;
+  return {id: uid(), state: st};
+}
+function loadStore(){
+  let raw = null;
+  try { raw = localStorage.getItem(LSKEY); } catch(e){}
+  if (!raw && LSKEY === "demo-broker-v2"){
+    try { raw = localStorage.getItem(LEGACY_LSKEY); } catch(e){}
+  }
+  let ok = false;
+  if (raw){
+    try {
+      const d = JSON.parse(raw);
+      if (d && Array.isArray(d.projects) && d.projects.length){
+        STORE.projects = d.projects.filter(p => p && p.id && p.state).map(p => ({id:p.id, state:normalizeProjectState(p.state)}));
+        if (STORE.projects.length){
+          STORE.activeId = d.activeId && STORE.projects.some(p => p.id === d.activeId) ? d.activeId : STORE.projects[0].id;
+          STORE.unit = d.unit === "UF" ? "UF" : "CLP";
+          STORE.railHidden = !!d.railHidden;
+          STORE.texts = (d.texts && typeof d.texts === "object") ? d.texts : {};
+          ok = true;
+        }
+      }
+    } catch(e){}
+  }
+  if (!ok){
+    STORE.projects = [makeProject(DEFAULTS)];
+    STORE.activeId = STORE.projects[0].id;
+  }
+  UNIT = STORE.unit;
+  TX = Object.assign({}, TEXT_DEF, STORE.texts || {});
+  S = active().state;
+}
+let saveT;
+let suppressNextCloudSave = false;
+function saveStore(){
+  clearTimeout(saveT);
+  saveT = setTimeout(() => {
+    try { localStorage.setItem(LSKEY, JSON.stringify(STORE)); } catch(e){}
+    if (suppressNextCloudSave) suppressNextCloudSave = false;
+    else window.dispatchEvent(new CustomEvent("vicaper-mesa-save"));
+  }, 220);
+}
+const active = () => STORE.projects.find(p => p.id === STORE.activeId) || STORE.projects[0];
+function setActive(id){
+  if (!STORE.projects.some(p => p.id === id)) return;
+  STORE.activeId = id; S = active().state; ESC_SEL = "base";
+  paint(); renderHitos(); render();
+}
+const ESCS = [
+  {key:"cons", label:"Conservador", css:"var(--e-cons)", sign:-1},
+  {key:"base", label:"Base",        css:"var(--e-base)", sign:0},
+  {key:"opt",  label:"Optimista",   css:"var(--e-opt)",  sign:1}
+];
+
+/* ============================== formato ============================== */
+const nf0 = new Intl.NumberFormat("es-CL",{maximumFractionDigits:0});
+const nf1 = new Intl.NumberFormat("es-CL",{minimumFractionDigits:1,maximumFractionDigits:1});
+const nf2 = new Intl.NumberFormat("es-CL",{minimumFractionDigits:2,maximumFractionDigits:2});
+const nf4 = new Intl.NumberFormat("es-CL",{minimumFractionDigits:2,maximumFractionDigits:4});
+const parseNum = v => {
+  if (typeof v === "number") return v;
+  const s = String(v).replace(/[^\d,.-]/g,"").replace(/\.(?=\d{3}\b)/g,"").replace(",",".");
+  const n = parseFloat(s);
+  return isFinite(n) ? n : 0;
+};
+// Los campos enteros en pesos usan puntos solo como separadores de miles.
+// Leerlos como decimales provoca que "2.0000" vuelva a 2 mientras se escribe.
+const parseWholeNumber = v => {
+  if (typeof v === "number") return isFinite(v) ? Math.round(v) : 0;
+  const raw = String(v ?? "").trim();
+  if (!raw) return 0;
+  const negative = /^-/.test(raw);
+  const digits = raw.replace(/\D/g, "");
+  if (!digits) return 0;
+  const n = Number(digits);
+  return isFinite(n) ? (negative ? -n : n) : 0;
+};
+const parseFieldValue = (kind, value) =>
+  kind === "money" || kind === "int" ? parseWholeNumber(value) : parseNum(value);
+const LAND_PRICE_MODES = ["clp_total", "uf_total", "uf_m2"];
+function landPriceMode(state){
+  return LAND_PRICE_MODES.includes(state && state.precioModo) ? state.precioModo : "clp_total";
+}
+function landPriceTotal(state){
+  if (!state) return 0;
+  const mode = landPriceMode(state);
+  const fallback = Math.max(0, Number(state.precio)||0);
+  const entered = state.precioEntrada === null || state.precioEntrada === undefined || !isFinite(Number(state.precioEntrada))
+    ? fallback
+    : Math.max(0, Number(state.precioEntrada)||0);
+  if (mode === "uf_total") return entered * Math.max(0, Number(state.uf)||0);
+  if (mode === "uf_m2") return entered * Math.max(0, Number(state.ha)||0) * 10000 * Math.max(0, Number(state.uf)||0);
+  return entered;
+}
+function landPriceEntryFromTotal(mode, total, state){
+  total = Math.max(0, Number(total)||0);
+  const uf = Math.max(0, Number(state && state.uf)||0);
+  const squareMeters = Math.max(0, Number(state && state.ha)||0) * 10000;
+  if (mode === "uf_total") return uf > 0 ? total / uf : 0;
+  if (mode === "uf_m2") return uf > 0 && squareMeters > 0 ? total / uf / squareMeters : 0;
+  return total;
+}
+function syncLandPrice(state){
+  state.precioModo = landPriceMode(state);
+  state.precio = Math.round(landPriceTotal(state));
+  return state.precio;
+}
+function normalizeProjectState(source){
+  const raw = clone(source || {});
+  const normalized = Object.assign(clone(DEFAULTS), raw);
+  normalized.precioModo = landPriceMode(normalized);
+  if (!Object.prototype.hasOwnProperty.call(raw, "precioEntrada") || raw.precioEntrada === null || raw.precioEntrada === undefined || !isFinite(Number(raw.precioEntrada))){
+    normalized.precioEntrada = landPriceEntryFromTotal(normalized.precioModo, Number(raw.precio ?? normalized.precio)||0, normalized);
+  }
+  syncLandPrice(normalized);
+  return normalized;
+}
+function landPriceBasisLabel(state){
+  const mode = landPriceMode(state);
+  const entered = Math.max(0, Number(state.precioEntrada)||0);
+  if (mode === "uf_total") return nf2.format(entered) + " UF total";
+  if (mode === "uf_m2") return nf4.format(entered) + " UF/m²";
+  return "$" + nf0.format(Math.round(entered)) + " total";
+}
+const clp = v => "$" + nf0.format(Math.round(v||0));
+const ufv = v => "UF " + nf1.format((v||0)/S.uf);
+const M   = v => UNIT === "CLP" ? clp(v) : ufv(v);
+const pctRaw = v => nf1.format((v||0)*100) + "%";
+const mm = v => {
+  const a = Math.abs(v);
+  if (UNIT === "UF") return nf0.format(Math.round(v/S.uf)) + " UF";
+  if (a >= 1e9) return nf1.format(v/1e9) + " MMM$";
+  if (a >= 1e6) return nf0.format(Math.round(v/1e6)) + " MM$";
+  if (a >= 1e3) return nf0.format(Math.round(v/1e3)) + " M$";
+  return nf0.format(Math.round(v));
+};
+const mesLabel = m => { const a = Math.floor((m-1)/12); return a > 0 ? `M${m} (año ${a+1})` : `M${m}`; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function categoryUnitPrice(category, uf){
+  return Math.max(0, category.precioModoUF
+    ? (Number(category.precioUF)||0) * Math.max(0, Number(uf)||0)
+    : Number(category.precio)||0);
+}
+
+function priceListSummary(s){
+  const stock = Math.max(0, Math.round(Number(s.lotes)||0));
+  const generalPrice = Math.max(0, Number(s.pvp)||0);
+  const categories = (Array.isArray(s.categoriasPrecios) ? s.categoriasPrecios : []).filter(row => row && typeof row === "object");
+  const assigned = categories.reduce((total, row) => total + Math.max(0, Math.round(Number(row.cant)||0)), 0);
+  const categoryTotal = categories.reduce((total, row) => total + Math.max(0, Math.round(Number(row.cant)||0)) * categoryUnitPrice(row, s.uf), 0);
+  const missing = Math.max(0, stock - assigned);
+  const valid = assigned <= stock && !categories.some(row => Number(row.cant)>0 && row.precioModoUF && !(Number(s.uf)>0));
+  const applied = !!s.usarListaPrecios && valid && assigned > 0;
+  // El stock aún sin categoría conserva explícitamente el PVP general.
+  const total = applied ? categoryTotal + missing * generalPrice : stock * generalPrice;
+  return {stock, categories, assigned, categoryTotal, missing, valid, applied, total, pvp:stock>0 ? total / stock : generalPrice};
+}
+
+function additionalIncome(s){
+  const uf = Math.max(0, Number(s.uf) || 0);
+  const waterUnit = s.vendeAgua
+    ? Math.max(0, s.precioAguaModoUF ? (Number(s.precioVentaAguaUFFijo)||0) * uf : Number(s.precioVentaAgua)||0)
+    : 0;
+  const building = s.vendeEdificacion
+    ? Math.max(0, s.edificacionModoUF ? (Number(s.valorEdificacionUFFijo)||0) * uf : Number(s.valorEdificacion)||0)
+    : 0;
+  const lots = Math.max(0, Math.round(Number(s.lotes)||0));
+  const waterTotal = waterUnit * lots;
+  return {waterUnit, waterTotal, building, total:waterTotal + building};
+}
+
+function ownerEarningsBreakdown(d){
+  const months = Math.max(0, Number(d && d.mesesVenta) || 0);
+  const total = Number(d && d.resumenProp) || 0;
+  const totalPct = Number(d && d.margenNetoPct) || 0;
+  if (!months) return {months:0, total, totalPct, monthly:0, annual:0, annualPct:0, fullYears:0, remainingMonths:0, remainingAmount:0, remainingPct:0};
+  const monthly = total / months;
+  const fullYears = Math.floor((months + 1e-9) / 12);
+  let remainingMonths = Math.max(0, months - fullYears * 12);
+  if (remainingMonths < 1e-7) remainingMonths = 0;
+  return {
+    months,
+    total,
+    totalPct,
+    monthly,
+    annual:monthly * 12,
+    annualPct:totalPct * 12 / months,
+    fullYears,
+    remainingMonths,
+    remainingAmount:monthly * remainingMonths,
+    remainingPct:totalPct * remainingMonths / months
+  };
+}
+
+function ownerEarningsRows(d){
+  const earnings = ownerEarningsBreakdown(d);
+  if (!earnings.months) return [];
+  const rows = [];
+  if (earnings.fullYears > 0){
+    const yearsLabel = earnings.fullYears === 1 ? "año 1" : `años 1 a ${earnings.fullYears}`;
+    rows.push([`Rentabilidad neta anual estimada (${yearsLabel})`, pctRaw(earnings.annualPct) + " anual"]);
+  }
+  if (earnings.remainingMonths > 0){
+    const roundedMonths = Math.round(earnings.remainingMonths * 10) / 10;
+    const monthsLabel = Math.abs(roundedMonths - Math.round(roundedMonths)) < 1e-9
+      ? nf0.format(Math.round(roundedMonths))
+      : nf1.format(roundedMonths);
+    rows.push([`Rentabilidad neta período final (${monthsLabel} ${roundedMonths === 1 ? "mes" : "meses"})`, pctRaw(earnings.remainingPct)]);
+  } else if (earnings.fullYears === 0){
+    rows.push([`Rentabilidad neta del período (${nf1.format(earnings.months)} meses)`, pctRaw(earnings.totalPct)]);
+  }
+  return rows;
+}
+
+/* ============================== modelo ============================== */
+function model(s){
+  const lotes = Math.max(0, Math.round(s.lotes));
+  const landCost = landPriceTotal(s);
+  const priceList = priceListSummary(s);
+  const pvp = priceList.pvp;
+  const extras = additionalIncome(s);
+  const ventaLotesTotal = priceList.total;
+  const ventaAguaTotal = extras.waterTotal;
+  const ingresoEdificacion = extras.building;
+  const ingresosAdicionales = extras.total;
+  const ventaTotal = ventaLotesTotal + ingresosAdicionales;
+  const costoHa = s.ha > 0 ? landCost / s.ha : 0;
+  const costoLote = lotes > 0 ? landCost / lotes : 0;
+  const margenBruto = ventaTotal - landCost;
+  const mgPct = ventaTotal ? margenBruto / ventaTotal : 0;
+
+  const velLotes = (s.vel/100) * lotes;
+  const mesesVenta = velLotes > 0 ? lotes / velLotes : 0;
+  const ventaMensual = mesesVenta > 0 ? ventaTotal / mesesVenta : 0;
+
+  const precioCobroLote = pvp + extras.waterUnit;
+  const pie = precioCobroLote * (s.pie/100);
+  const saldo = precioCobroLote - pie;
+  const cuota = s.cuotas > 0 ? saldo / s.cuotas : 0;
+  const flujoIngMensual = velLotes * pie;
+
+  const gastoCom = ventaTotal * (s.com/100);
+  const gastoHab = ventaTotal * (s.hab/100);
+  const totalGastos = gastoCom + gastoHab;
+  const resumenProp = margenBruto - totalGastos;
+  const margenNetoPct = landCost ? resumenProp / landCost : 0;
+  const resultadoProp = landCost + resumenProp;
+
+  const iniVenta = Math.max(1, Math.round(s.iniVenta));
+  const mVentaFin = iniVenta + Math.ceil(mesesVenta) - 1;
+  let H = Math.min(MAXH, Math.max(12, mVentaFin + Math.round(s.cuotas) + 2));
+  const fijos = s.hitos.filter(h => h.m !== "auto").map(h => Math.round(parseNum(h.m)));
+  if (fijos.length) H = Math.min(MAXH, Math.max(H, Math.max(...fijos)));
+  if (s.propModo === "cuotas") H = Math.min(MAXH, Math.max(H, Math.round(s.propMes) + Math.round(s.propN)));
+
+  const z = () => new Array(H+1).fill(0);
+  const vendidos = z(), acumLotes = z(), pies = z(), cuotas = z(), otrosIngresos = z();
+
+  let rest = lotes;
+  for (let m = iniVenta; m <= H && rest > 1e-9; m++){
+    const q = Math.min(rest, velLotes);
+    rest -= q;
+    vendidos[m] += q;
+    pies[m] += q * pie;
+    for (let k = 1; k <= s.cuotas; k++){ const t = m + k; if (t <= H) cuotas[t] += q * cuota; }
+  }
+  let ac = 0;
+  for (let m = 1; m <= H; m++){ ac += vendidos[m]; acumLotes[m] = ac; }
+  if (ingresoEdificacion > 0 && iniVenta <= H) otrosIngresos[iniVenta] += ingresoEdificacion;
+
+  const rec = z(), egCom = z(), egProp = z();
+  for (let m = 1; m <= H; m++){ rec[m] = pies[m] + cuotas[m] + otrosIngresos[m]; egCom[m] = rec[m] * (s.com/100); }
+
+  const propTotalObjetivo = s.propModo === "contado" ? landCost : resultadoProp;
+  if (s.propModo === "prorrata"){
+    const desde = Math.max(1, Math.round(s.propDesde));
+    for (let m = desde; m <= H; m++) egProp[m] = rec[m] * (s.propPct/100);
+  } else if (s.propModo === "cuotas"){
+    const n = Math.max(1, Math.round(s.propN)), ini = Math.max(1, Math.round(s.propMes));
+    for (let k = 0; k < n; k++){ const t = ini + k; if (t <= H) egProp[t] += propTotalObjetivo / n; }
+  } else {
+    const t = Math.max(1, Math.round(s.propMesC));
+    if (t <= H) egProp[t] += propTotalObjetivo;
+  }
+
+  const hitos = s.hitos.map((h,i) => ({
+    idx:i, nombre:h.n || `Hito ${i+1}`, costo:Math.max(0,parseNum(h.c)),
+    auto:h.m === "auto", mesFijo:h.m === "auto" ? null : Math.max(1,Math.round(parseNum(h.m))), mes:null
+  }));
+  const egObra = z(), caja = z(), neto = z(), propAcum = z();
+  const cola = hitos.filter(h => h.auto);
+  let qi = 0, acc = 0, pAc = 0;
+
+  for (let m = 1; m <= H; m++){
+    const base = rec[m] - egCom[m] - egProp[m];
+    acc += base;
+    hitos.filter(h => !h.auto && h.mesFijo === m).forEach(h => { egObra[m] += h.costo; acc -= h.costo; h.mes = m; });
+    while (qi < cola.length && cola[qi].costo <= acc + 1e-6){
+      acc -= cola[qi].costo; egObra[m] += cola[qi].costo; cola[qi].mes = m; qi++;
+    }
+    neto[m] = base - egObra[m];
+    caja[m] = acc;
+    pAc += egProp[m]; propAcum[m] = pAc;
+  }
+
+  const sum = a => a.reduce((x,y) => x+y, 0);
+  const totalHitos = hitos.reduce((a,h) => a + h.costo, 0);
+  let cajaMax = 0, mesCajaMax = 0, mesNeg = null, mesPropFull = null;
+  for (let m = 1; m <= H; m++){
+    if (caja[m] > cajaMax){ cajaMax = caja[m]; mesCajaMax = m; }
+    if (mesNeg === null && caja[m] < -1e-6) mesNeg = m;
+    if (mesPropFull === null && propAcum[m] >= propTotalObjetivo - 1) mesPropFull = m;
+  }
+  const mesUltHito = hitos.length ? (hitos.every(h => h.mes) ? Math.max(...hitos.map(h => h.mes)) : null) : 0;
+
+  return {H, lotes, landCost, ventaTotal, ventaLotesTotal, ventaAguaTotal, ingresoEdificacion, ingresosAdicionales,
+    precioAguaUnitario:extras.waterUnit, precioCobroLote, costoHa, costoLote, margenBruto, mgPct, velLotes, mesesVenta,
+    ventaMensual, pie, saldo, cuota, flujoIngMensual, gastoCom, gastoHab, totalGastos,
+    resumenProp, margenNetoPct, resultadoProp, iniVenta, mVentaFin,
+    vendidos, acumLotes, pies, cuotas, otrosIngresos, rec, egCom, egProp, egObra, neto, caja, propAcum,
+    hitos, totalHitos, propTotalObjetivo, mesPropFull,
+    recTotal:sum(rec), comTotal:sum(egCom), propPagado:sum(egProp), obraTotal:sum(egObra),
+    piesTotal:sum(pies), cuotasTotal:sum(cuotas), otrosIngresosTotal:sum(otrosIngresos),
+    cajaMax, mesCajaMax, mesNeg, mesUltHito, pvp, vel:s.vel};
+}
+function escState(e){
+  const s = JSON.parse(JSON.stringify(S));
+  if (e.sign !== 0){
+    s.vel = S.vel * (1 + e.sign * S.sensVel/100);
+    const priceFactor = Math.max(0, 1 + e.sign * S.sensPvp/100);
+    s.pvp = S.pvp * priceFactor;
+    (s.categoriasPrecios||[]).forEach(row => {
+      row.precio = (Number(row.precio)||0) * priceFactor;
+      row.precioUF = (Number(row.precioUF)||0) * priceFactor;
+    });
+  }
+  return s;
+}
+
+function buildBrokerExecutiveData(){
+  const scenarios = ESCS.map(e => ({e, D:model(escState(e))}));
+  const current = scenarios.find(item => item.e.key === ESC_SEL) || scenarios[1];
+  const D = current.D;
+  const ownerEarnings = ownerEarningsBreakdown(D);
+  const pendingOwner = Math.max(0, D.propTotalObjetivo - D.propPagado);
+  const worksOverrun = Math.max(0, D.totalHitos - D.gastoHab);
+  const timelineItems = [
+    {month:1, label:"Inicio del proyecto", detail:"Preparación, planos y lanzamiento"}
+  ];
+  D.hitos.filter(h => h.mes).sort((a,b) => a.mes-b.mes).slice(0,2).forEach(h => {
+    timelineItems.push({month:h.mes, label:h.nombre, detail:"Hito por " + clp(h.costo), tone:D.mesNeg===h.mes?"risk":""});
+  });
+  timelineItems.push({month:D.mVentaFin, label:"Último lote vendido", detail:D.lotes + " lotes colocados"});
+  timelineItems.push({month:D.H, label:"Último cobro proyectado", detail:"Cierre del horizonte", tone:pendingOwner>0?"warn":""});
+
+  const alerts = [];
+  if (D.mesNeg) alerts.push({tone:"risk", title:"La caja queda negativa en " + mesLabel(D.mesNeg), body:"Revisa el calendario de obras o la modalidad de pago al aportante antes de comprometer el flujo."});
+  else alerts.push({tone:"ok", title:"La caja no cae bajo cero", body:"Con los supuestos actuales, el flujo alcanza para cubrir los egresos programados."});
+  if (worksOverrun > 0) alerts.push({tone:"warn", title:"Las obras exceden el presupuesto", body:"Los hitos cargados superan en " + clp(worksOverrun) + " el presupuesto porcentual de habilitación."});
+  else alerts.push({tone:"ok", title:"Obras dentro del presupuesto", body:"Los hitos informados caben dentro del monto reservado para habilitación."});
+  if (pendingOwner > 0) alerts.push({tone:"warn", title:"Queda saldo al cierre", body:"Al mes " + D.H + " quedan " + clp(pendingOwner) + " por pagar al propietario; debe acordarse su forma de liquidación."});
+  else alerts.push({tone:"ok", title:"Pago completo al propietario", body:"El flujo proyectado cubre el total comprometido dentro del horizonte modelado."});
+
+  return {
+    mode:"broker",
+    projectName:S.nombre || "Proyecto sin nombre",
+    location:S.region || "Ubicación no informada",
+    company:T("empresa") || "Tierras de Chile Broker SpA",
+    scenarioLabel:"Escenario " + current.e.label,
+    lots:D.lotes,
+    hectares:S.ha,
+    saleTotal:D.ventaTotal,
+    saleMonths:D.mesesVenta,
+    horizonMonths:D.H,
+    landCost:D.landCost,
+    landCostBasis:landPriceBasisLabel(S),
+    commercialCost:D.gastoCom,
+    worksCost:D.gastoHab,
+    netProfit:D.resumenProp,
+    resultAmount:D.resultadoProp,
+    resultLabel:"Resultado total propietario",
+    resultPct:D.margenNetoPct*100,
+    resultPctLabel:"Ganancia sobre el predio",
+    annualReturnPct:ownerEarnings.annualPct*100,
+    annualReturnYears:ownerEarnings.fullYears,
+    remainingReturnPct:ownerEarnings.remainingPct*100,
+    remainingReturnMonths:ownerEarnings.remainingMonths,
+    pvp:D.pvp,
+    unitSalePrice:D.precioCobroLote,
+    waterUnit:D.precioAguaUnitario,
+    waterIncome:D.ventaAguaTotal,
+    buildingIncome:D.ingresoEdificacion,
+    extraIncomeTotal:D.ingresosAdicionales,
+    piePct:S.pie,
+    pieAmount:D.pie,
+    balanceAmount:D.saldo,
+    installments:S.cuotas,
+    installmentAmount:D.cuota,
+    scenarios:scenarios.map(item => ({
+      label:item.e.label,
+      result:item.D.resultadoProp,
+      months:item.D.mesesVenta,
+      detail:(item.e.sign<0?"−":item.e.sign>0?"+":"") + (item.e.sign===0?"Datos base":nf1.format(Math.abs(item.e.sign*S.sensVel))+"% ritmo · "+nf1.format(Math.abs(item.e.sign*S.sensPvp))+"% precio")
+    })),
+    timeline:timelineItems,
+    alerts:alerts,
+    disclaimer:T("footer")
+  };
+}
+
+function printBrokerExecutiveSummary(){
+  if (!window.VicaperExecutiveSummary){ alert("El resumen ejecutivo todavía se está cargando. Intenta nuevamente."); return; }
+  window.VicaperExecutiveSummary.open(buildBrokerExecutiveData());
+}
+
+/* ============================== toolkit de gráficos ============================== */
+function rr(x,y,w,h,r,up){
+  r = Math.max(0, Math.min(r, w/2, Math.abs(h)));
+  if (h <= 0.4) return `M${x} ${y}h${w}v0.4h${-w}Z`;
+  return up
+    ? `M${x} ${y+h} V${y+r} A${r} ${r} 0 0 1 ${x+r} ${y} H${x+w-r} A${r} ${r} 0 0 1 ${x+w} ${y+r} V${y+h} Z`
+    : `M${x} ${y} V${y+h-r} A${r} ${r} 0 0 0 ${x+r} ${y+h} H${x+w-r} A${r} ${r} 0 0 0 ${x+w} ${y+h-r} V${y} Z`;
+}
+function niceTicks(min,max,n){
+  if (max === min) max = min + 1;
+  const span = max - min, step0 = span/n, mag = Math.pow(10, Math.floor(Math.log10(step0)));
+  const norm = step0/mag, step = (norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 2.5 ? 2.5 : norm <= 5 ? 5 : 10) * mag;
+  const out = []; for (let t = Math.ceil(min/step)*step; t <= max + step*0.01; t += step) out.push(t);
+  return out;
+}
+const TXT = 'font-family="IBM Plex Mono, monospace" font-size="10"';
+function frame(el, H, hgt, opt){
+  const w = Math.max(360, el.clientWidth), h = hgt;
+  const pl = opt.pl ?? 62, pr = 14, pt = 12, pb = 26;
+  const k = (opt.raw || UNIT !== "UF") ? 1 : S.uf;
+  const ticks = niceTicks(opt.lo/k, opt.hi/k, opt.n || 4).map(t => t*k);
+  const lo = Math.min(opt.lo, ticks[0]), hi = Math.max(opt.hi, ticks[ticks.length-1]);
+  const y = v => pt + (hi - v)/(hi - lo) * (h - pt - pb);
+  const step = (w - pl - pr)/H;
+  const X = {step, x: m => pl + (m-0.5)*step};
+  const fmt = opt.fmt || mm;
+  let grid = "";
+  ticks.forEach(t => {
+    grid += `<line x1="${pl}" x2="${w-pr}" y1="${y(t).toFixed(1)}" y2="${y(t).toFixed(1)}" stroke="${Math.abs(t)<1e-9?'var(--rule-strong)':'var(--rule)'}" stroke-width="1"/>`
+         +  `<text x="${pl-8}" y="${(y(t)+3.5).toFixed(1)}" text-anchor="end" fill="var(--ink-3)" ${TXT}>${fmt(t)}</text>`;
+  });
+  const sl = H > 90 ? 12 : H > 48 ? 6 : H > 24 ? 3 : 2;
+  let ax = "";
+  for (let m = sl; m <= H; m += sl)
+    ax += `<text x="${X.x(m).toFixed(1)}" y="${h-8}" text-anchor="middle" fill="var(--ink-3)" ${TXT}>${m}</text>`;
+  const hit = `<rect class="hit" x="${pl}" y="${pt}" width="${w-pl-pr}" height="${h-pt-pb}" fill="transparent"/>`;
+  return {w,h,pl,pr,pt,pb,y,X,grid,ax,hit,
+    open: label => `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="${label}">`, close:"</svg>"};
+}
+function bindHover(wrap, tip, F, H, builder){
+  const svg = wrap.querySelector("svg"); if (!svg) return;
+  const hit = svg.querySelector(".hit"); if (!hit) return;
+  let cross = null;
+  hit.addEventListener("mousemove", ev => {
+    const r = svg.getBoundingClientRect();
+    const px = (ev.clientX - r.left) * (F.w / r.width);
+    let m = Math.max(1, Math.min(H, Math.round((px - F.pl)/F.X.step + 0.5)));
+    if (!cross){
+      cross = document.createElementNS("http://www.w3.org/2000/svg","line");
+      cross.setAttribute("stroke","var(--ink-3)"); cross.setAttribute("stroke-width","1");
+      cross.setAttribute("stroke-dasharray","2 3"); cross.setAttribute("pointer-events","none");
+      svg.insertBefore(cross, hit);
+    }
+    const cx = F.X.x(m).toFixed(1);
+    cross.setAttribute("x1",cx); cross.setAttribute("x2",cx);
+    cross.setAttribute("y1",F.pt); cross.setAttribute("y2",F.h - F.pb);
+    tip.innerHTML = builder(m); tip.style.opacity = 1;
+    const tw = tip.offsetWidth, ww = wrap.clientWidth;
+    let left = (F.X.x(m)/F.w)*ww + 14;
+    if (left + tw > ww - 4) left = (F.X.x(m)/F.w)*ww - tw - 14;
+    tip.style.left = Math.max(2,left) + "px"; tip.style.top = "8px";
+  });
+  hit.addEventListener("mouseleave", () => { tip.style.opacity = 0; if (cross){ cross.remove(); cross = null; } });
+}
+function pathOf(F, arr, from, to){
+  let d = "";
+  for (let m = from; m <= to; m++) d += (m === from ? "M" : "L") + F.X.x(m).toFixed(1) + " " + F.y(arr[m]).toFixed(1);
+  return d;
+}
+
+/* ---- 1. flujo mensual (diverging) ---- */
+function chartFlujo(el, D){
+  const egs = Array.from({length:D.H}, (_,i) => D.egCom[i+1]+D.egProp[i+1]+D.egObra[i+1]);
+  const F = frame(el, D.H, 250, {lo:-Math.max(1,...egs), hi:Math.max(1,...D.rec.slice(1)), n:5});
+  const bw = Math.max(2, Math.min(15, F.X.step - 2));
+  let b = "";
+  for (let m = 1; m <= D.H; m++){
+    const cx = F.X.x(m) - bw/2;
+    if (D.rec[m] > 0) b += `<path d="${rr(cx, F.y(D.rec[m]), bw, F.y(0)-F.y(D.rec[m]), 4, true)}" fill="var(--s-ingreso)"/>`;
+    const eg = D.egCom[m] + D.egProp[m] + D.egObra[m];
+    if (eg > 0) b += `<path d="${rr(cx, F.y(0)+2, bw, F.y(-eg)-F.y(0)-2, 4, false)}" fill="var(--s-egreso)"/>`;
+  }
+  el.innerHTML = F.open("Recaudación y egresos por mes") + F.grid + b + F.ax + F.hit + F.close;
+  return F;
+}
+/* ---- 2. recaudación por origen (área apilada) ---- */
+function chartOrigen(el, D){
+  const tot = Array.from({length:D.H+1}, (_,m) => m ? D.rec[m] : 0);
+  const F = frame(el, D.H, 210, {lo:0, hi:Math.max(1,...tot.slice(1)), n:4});
+  const piesArr = D.pies, cuotasTop = Array.from({length:D.H+1}, (_,m) => D.pies[m] + D.cuotas[m]);
+  const top = D.rec;
+  const base = `${pathOf(F, piesArr, 1, D.H)} L${F.X.x(D.H).toFixed(1)} ${F.y(0).toFixed(1)} L${F.X.x(1).toFixed(1)} ${F.y(0).toFixed(1)} Z`;
+  let up = pathOf(F, cuotasTop, 1, D.H);
+  for (let m = D.H; m >= 1; m--) up += "L" + F.X.x(m).toFixed(1) + " " + F.y(piesArr[m]).toFixed(1);
+  let extra = pathOf(F, top, 1, D.H);
+  for (let m = D.H; m >= 1; m--) extra += "L" + F.X.x(m).toFixed(1) + " " + F.y(cuotasTop[m]).toFixed(1);
+  el.innerHTML = F.open("Recaudación por origen") + F.grid
+    + `<path d="${extra}Z" fill="var(--s-4)" opacity=".82"/>`
+    + `<path d="${up}Z" fill="var(--s-caja)" opacity=".82"/>`
+    + `<path d="${base}" fill="var(--s-ingreso)" opacity=".9"/>`
+    + `<path d="${pathOf(F, piesArr, 1, D.H)}" fill="none" stroke="var(--surface)" stroke-width="2"/>`
+    + F.ax + F.hit + F.close;
+  return F;
+}
+/* ---- 3. caja acumulada ---- */
+function chartCaja(el, D){
+  const vals = D.caja.slice(1);
+  const F = frame(el, D.H, 230, {lo:Math.min(0,...vals), hi:Math.max(1,...vals), n:4});
+  const line = pathOf(F, D.caja, 1, D.H);
+  const area = line + `L${F.X.x(D.H).toFixed(1)} ${F.y(0).toFixed(1)} L${F.X.x(1).toFixed(1)} ${F.y(0).toFixed(1)} Z`;
+  let marks = "";
+  D.hitos.filter(x => x.mes).forEach(x => {
+    const px = F.X.x(x.mes), py = F.y(D.caja[x.mes]);
+    marks += `<line x1="${px.toFixed(1)}" x2="${px.toFixed(1)}" y1="${F.pt}" y2="${(F.h-F.pb).toFixed(1)}" stroke="var(--s-egreso)" stroke-width="1" stroke-dasharray="3 3" opacity=".55"/>`
+          +  `<rect x="${(px-4).toFixed(1)}" y="${(py-4).toFixed(1)}" width="8" height="8" transform="rotate(45 ${px.toFixed(1)} ${py.toFixed(1)})" fill="var(--s-egreso)" stroke="var(--surface)" stroke-width="2"/>`;
+  });
+  el.innerHTML = F.open("Caja acumulada disponible para obras") + F.grid
+    + `<path d="${area}" fill="var(--s-caja)" opacity=".13"/>`
+    + `<path d="${line}" fill="none" stroke="var(--s-caja)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`
+    + marks
+    + `<circle cx="${F.X.x(D.H).toFixed(1)}" cy="${F.y(D.caja[D.H]).toFixed(1)}" r="4" fill="var(--s-caja)" stroke="var(--surface)" stroke-width="2"/>`
+    + F.ax + F.hit + F.close;
+  return F;
+}
+/* ---- 4. colocación de lotes ---- */
+function chartColoc(el, D){
+  const F = frame(el, D.H, 200, {lo:0, hi:D.lotes, n:4, raw:true, fmt: v => nf0.format(Math.round(v))});
+  const stock = Array.from({length:D.H+1}, (_,m) => D.lotes - D.acumLotes[m]);
+  const line = pathOf(F, D.acumLotes, 1, D.H);
+  const area = line + `L${F.X.x(D.H).toFixed(1)} ${F.y(0).toFixed(1)} L${F.X.x(1).toFixed(1)} ${F.y(0).toFixed(1)} Z`;
+  const fin = D.mVentaFin <= D.H ? D.mVentaFin : null;
+  el.innerHTML = F.open("Colocación de lotes en el tiempo") + F.grid
+    + `<path d="${area}" fill="var(--s-ingreso)" opacity=".14"/>`
+    + `<path d="${pathOf(F, stock, 1, D.H)}" fill="none" stroke="var(--ink-3)" stroke-width="2" stroke-dasharray="4 4"/>`
+    + `<path d="${line}" fill="none" stroke="var(--s-ingreso)" stroke-width="2" stroke-linejoin="round"/>`
+    + (fin ? `<line x1="${F.X.x(fin).toFixed(1)}" x2="${F.X.x(fin).toFixed(1)}" y1="${F.pt}" y2="${(F.h-F.pb).toFixed(1)}" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 3"/>`
+           + `<text x="${(F.X.x(fin)-6).toFixed(1)}" y="${F.pt+12}" text-anchor="end" fill="var(--accent)" font-family="Public Sans,sans-serif" font-size="10.5" font-weight="600">Último lote · M${fin}</text>` : "")
+    + F.ax + F.hit + F.close;
+  return F;
+}
+/* ---- 5. pagos al aportante ---- */
+function chartProp(el, D){
+  const F = frame(el, D.H, 200, {lo:0, hi:Math.max(D.propTotalObjetivo, ...D.propAcum.slice(1)), n:4});
+  const line = pathOf(F, D.propAcum, 1, D.H);
+  const area = line + `L${F.X.x(D.H).toFixed(1)} ${F.y(0).toFixed(1)} L${F.X.x(1).toFixed(1)} ${F.y(0).toFixed(1)} Z`;
+  const yT = F.y(D.propTotalObjetivo);
+  el.innerHTML = F.open("Acumulado pagado al aportante") + F.grid
+    + `<path d="${area}" fill="var(--s-caja)" opacity=".13"/>`
+    + `<line x1="${F.pl}" x2="${F.w-F.pr}" y1="${yT.toFixed(1)}" y2="${yT.toFixed(1)}" stroke="var(--ink-3)" stroke-width="1.5" stroke-dasharray="5 4"/>`
+    + `<text x="${F.w-F.pr}" y="${(yT-6).toFixed(1)}" text-anchor="end" fill="var(--ink-2)" font-family="Public Sans,sans-serif" font-size="10.5" font-weight="600">Comprometido ${M(D.propTotalObjetivo)}</text>`
+    + `<path d="${line}" fill="none" stroke="var(--s-caja)" stroke-width="2" stroke-linejoin="round"/>`
+    + F.ax + F.hit + F.close;
+  return F;
+}
+function chartPropBar(el, D){
+  const F = frame(el, D.H, 130, {lo:0, hi:Math.max(1,...D.egProp.slice(1)), n:2});
+  const bw = Math.max(2, Math.min(15, F.X.step - 2));
+  let b = "";
+  for (let m = 1; m <= D.H; m++)
+    if (D.egProp[m] > 0) b += `<path d="${rr(F.X.x(m)-bw/2, F.y(D.egProp[m]), bw, F.y(0)-F.y(D.egProp[m]), 4, true)}" fill="var(--s-ingreso)"/>`;
+  el.innerHTML = F.open("Pago mensual al aportante") + F.grid + b + F.ax + F.close;
+  return F;
+}
+/* ---- 6. composición de la venta ---- */
+function chartCompo(el, D){
+  const w = Math.max(320, el.clientWidth), h = 84, pad = 0, bh = 34, top = 22;
+  const parts = [
+    ["Predio (costo)",                D.ventaTotal ? D.landCost/D.ventaTotal : 0, D.landCost,  "var(--s-caja)"],
+    ["Comercialización",              D.ventaTotal ? D.gastoCom/D.ventaTotal : 0, D.gastoCom,  "var(--s-egreso)"],
+    ["Habilitación / obras",          D.ventaTotal ? D.gastoHab/D.ventaTotal : 0, D.gastoHab,  "var(--s-ingreso)"],
+    ["Margen neto del " + T("tPropietario"), D.ventaTotal ? D.resumenProp/D.ventaTotal : 0, D.resumenProp, "var(--s-4)"]
+  ];
+  let x = pad, segs = "", labs = "";
+  const usable = w - pad*2 - (parts.length-1)*2;
+  parts.forEach(([name,frac,val,color],i) => {
+    const bwd = Math.max(0, usable * Math.max(0,frac));
+    const r = Math.min(4, bwd/2);
+    segs += `<rect x="${x.toFixed(1)}" y="${top}" width="${bwd.toFixed(1)}" height="${bh}" rx="${r.toFixed(1)}" fill="${color}"><title>${esc(name)}: ${pctRaw(frac)}</title></rect>`;
+    if (bwd > 34)
+      labs += `<text x="${(x + bwd/2).toFixed(1)}" y="${top - 7}" text-anchor="middle" fill="var(--ink-2)" font-family="IBM Plex Mono, monospace" font-size="11.5" font-weight="500">${pctRaw(frac)}</text>`;
+    x += bwd + 2;
+  });
+  el.innerHTML = `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="Composición de la venta total">${segs}${labs}
+    <text x="0" y="${h-6}" fill="var(--ink-3)" font-family="Public Sans, sans-serif" font-size="11">Venta total ${M(D.ventaTotal)}</text></svg>`;
+  return parts;
+}
+/* ---- 7. escenarios superpuestos ---- */
+function chartEsc(el, Ds){
+  const Hm = Math.max(...Ds.map(d => d.D.H));
+  const all = Ds.flatMap(d => d.D.caja.slice(1));
+  const F = frame(el, Hm, 240, {lo:Math.min(0,...all), hi:Math.max(1,...all), n:4});
+  let lines = "";
+  Ds.forEach(d => {
+    const D = d.D;
+    lines += `<path d="${pathOf(F, D.caja, 1, D.H)}" fill="none" stroke="${d.e.css}" stroke-width="${d.e.key===ESC_SEL?2.6:2}" stroke-linejoin="round" stroke-linecap="round" ${d.e.key===ESC_SEL?"":'opacity=".85"'}/>`
+          +  `<circle cx="${F.X.x(D.H).toFixed(1)}" cy="${F.y(D.caja[D.H]).toFixed(1)}" r="3.5" fill="${d.e.css}" stroke="var(--surface)" stroke-width="2"/>`;
+  });
+  el.innerHTML = F.open("Caja acumulada comparada por escenario") + F.grid + lines + F.ax + F.hit + F.close;
+  return {F, Hm};
+}
+
+/* ============================== render ============================== */
+function render(){
+  renderLandPriceControl();
+  const Ds = ESCS.map(e => ({e, D: model(escState(e))}));
+  const cur = Ds.find(d => d.e.key === ESC_SEL) || Ds[1];
+  const D = cur.D;
+  window.__D = D; window.__Ds = Ds;
+  applyTexts();
+  renderPriceList();
+  renderProjects();
+  STORE.unit = UNIT;
+  saveStore();
+
+  /* --- barra de escenarios --- */
+  document.getElementById("escbar").innerHTML = Ds.map(({e,D:d}) => `
+    <button type="button" class="esc" data-k="${e.key}" style="--c:${e.css}" aria-pressed="${e.key===ESC_SEL}">
+      <span class="sel">Viendo</span>
+      <div class="top"><span class="name">${e.label}</span></div>
+      <div class="v">${M(d.resultadoProp)}</div>
+      <div class="n">al ${esc(T("tAportante"))} · ${nf1.format(d.mesesVenta)} meses de venta · PVP ${M(d.pvp)}</div>
+    </button>`).join("");
+  document.querySelectorAll(".esc").forEach(b => b.addEventListener("click", () => { ESC_SEL = b.dataset.k; render(); }));
+
+  /* --- tabla comparativa --- */
+  const rowsCmp = [
+    ["Velocidad de venta",      d => nf1.format(d.velLotes) + " lotes/mes"],
+    ["PVP unitario",            d => M(d.pvp)],
+    ["Meses de venta",          d => nf1.format(d.mesesVenta)],
+    ["Ingresos adicionales",    d => d.ingresosAdicionales ? M(d.ingresosAdicionales) : "—"],
+    ["Venta total estimada",    d => M(d.ventaTotal)],
+    ["Margen bruto",            d => M(d.margenBruto) + "  (" + pctRaw(d.mgPct) + ")"],
+    ["Gastos totales",          d => "−" + M(d.totalGastos)],
+    ["Margen neto " + T("tPropietario"), d => M(d.resumenProp) + "  (" + pctRaw(d.margenNetoPct) + ")"],
+    [T("kResultado"), d => M(d.resultadoProp)],
+    ["Presupuesto de obras",    d => M(d.gastoHab)],
+    ["Caja máxima disponible",  d => M(d.cajaMax)],
+    ["Obras terminadas en",     d => d.mesUltHito ? mesLabel(d.mesUltHito) : "no alcanza"],
+    [Tcap("tAportante") + " pagado al 100% en", d => d.mesPropFull ? mesLabel(d.mesPropFull) : "no alcanza"]
+  ];
+  document.getElementById("tEsc").innerHTML =
+    `<thead><tr><th>Indicador</th>${Ds.map(({e}) => `<th style="text-align:right"><span class="dot" style="background:${e.css}"></span>${e.label}${e.key===ESC_SEL?" ·":""}</th>`).join("")}</tr></thead>
+     <tbody>${rowsCmp.map(([k,fn],i) => `<tr class="${k===T("kResultado")?"hi":""}"><th>${k}</th>${Ds.map(({D:d}) => `<td>${fn(d)}</td>`).join("")}</tr>`).join("")}</tbody>`;
+  document.getElementById("noteEsc").textContent =
+    `Conservador y optimista = base ± ${nf1.format(S.sensVel)}% de velocidad y ± ${nf1.format(S.sensPvp)}% de precio`;
+  document.getElementById("legEsc").innerHTML =
+    Ds.map(({e}) => `<span><i style="background:${e.css}"></i>Caja acumulada · ${e.label}</span>`).join("") +
+    `<span class="far">Haz clic en una tarjeta de arriba para ver ese escenario en detalle</span>`;
+
+  const cwEsc = document.getElementById("cwEsc"), tipEsc = document.getElementById("tipEsc");
+  const RE = chartEsc(cwEsc, Ds); cwEsc.appendChild(tipEsc);
+  bindHover(cwEsc, tipEsc, RE.F, RE.Hm, m => `<h4>${mesLabel(m)}</h4>` + Ds.map(({e,D:d}) =>
+    `<div class="r"><span><span class="dot" style="background:${e.css}"></span>${e.label}</span><b>${m <= d.H ? M(d.caja[m]) : "—"}</b></div>`).join(""));
+
+  /* --- alertas --- */
+  const al = [];
+  if (D.mesNeg) al.push(["crit","Caja negativa:",`en el escenario ${cur.e.label.toLowerCase()} la caja queda bajo cero en ${mesLabel(D.mesNeg)}. Revise los hitos con mes fijo o difiera el pago al ${T("tAportante")}.`]);
+  const noFin = D.hitos.filter(h => !h.mes);
+  if (noFin.length) al.push(["","Hitos sin financiamiento:",`${noFin.map(h => h.nombre).join(", ")} — la caja no alcanza dentro de los ${D.H} meses proyectados.`]);
+  if (D.totalHitos > D.gastoHab*1.0001) al.push(["","Obras sobre presupuesto:",`los hitos suman ${M(D.totalHitos)}, es decir ${M(D.totalHitos - D.gastoHab)} más que el ${nf1.format(S.hab)}% de habilitación de la propuesta.`]);
+  if (!D.mesPropFull) al.push(["","Saldo pendiente con el " + T("tAportante") + ":",`al mes ${D.H} se le habrán pagado ${M(D.propPagado)} de los ${M(D.propTotalObjetivo)} comprometidos. Quedan ${M(D.propTotalObjetivo - D.propPagado)} por enterar.`]);
+  document.getElementById("alerts").innerHTML = al.map(([k,t,b]) =>
+    `<div class="alert ${k}"><span aria-hidden="true">${k==="crit"?"■":"▲"}</span><span><b>${t}</b> ${b}</span></div>`).join("");
+
+  /* --- KPIs --- */
+  document.getElementById("kpis").innerHTML = `
+    ${kpi(T("kVenta"), M(D.ventaTotal), `${D.lotes} lotes · PVP ${M(D.pvp)}${D.ingresosAdicionales ? ` · adicionales ${M(D.ingresosAdicionales)}` : ""}`)}
+    ${kpi(T("kMargen"), M(D.margenBruto), `${pctRaw(D.mgPct)} sobre la venta`)}
+    ${kpi(T("kResultado"), M(D.resultadoProp), `predio + ${pctRaw(D.margenNetoPct)} de margen neto`, true)}
+    ${kpi(T("kPresupuesto"), M(D.gastoHab), `${nf1.format(S.hab)}% de la venta · cargado ${M(D.totalHitos)}`)}
+    ${kpi(T("kCaja"), M(D.cajaMax), D.cajaMax > 0 ? `punto más alto en ${mesLabel(D.mesCajaMax)}` : "sin excedente en el horizonte")}
+    ${kpi(T("kObras"), D.mesUltHito ? mesLabel(D.mesUltHito) : "—", D.mesUltHito ? `${D.hitos.length} hitos financiados` : "hay hitos sin financiamiento")}`;
+
+  /* --- bloques --- */
+  document.getElementById("noteUnidad").textContent = `Escenario ${cur.e.label} · Valor UF ${clp(S.uf)} · cifras en ${UNIT}`;
+  document.getElementById("blocks").innerHTML = `
+    ${block(T("bPredio"), [
+      ["Superficie", nf2.format(S.ha) + " Ha"],
+      ["Cantidad de lotes", nf0.format(D.lotes)],
+      ["Región / Comuna", S.region || "—"],
+      ["Precio informado", landPriceBasisLabel(S)],
+      ["Costo total del predio", M(D.landCost)],
+      ["Costo por hectárea", M(D.costoHa)],
+      ["Costo por lote", M(D.costoLote)]
+    ])}
+    ${block(T("bNegocio"), [
+      ["PVP unitario", M(D.pvp)],
+      ...(D.precioAguaUnitario ? [["Venta de agua por lote", M(D.precioAguaUnitario)]] : []),
+      ...(D.ingresoEdificacion ? [["Ingreso por edificación", M(D.ingresoEdificacion)]] : []),
+      ["Velocidad de venta", nf1.format(D.velLotes) + " lotes/mes"],
+      ["Meses de venta estimados", nf1.format(D.mesesVenta)],
+      ...(D.ingresosAdicionales ? [["Ingresos adicionales", M(D.ingresosAdicionales)]] : []),
+      ["Venta total estimada", M(D.ventaTotal)],
+      ["Margen bruto", M(D.margenBruto)],
+      ["MG bruto %", pctRaw(D.mgPct)],
+      ["Venta mensual estimada", M(D.ventaMensual)],
+      ["Flujo de ingreso mensual (pies)", M(D.flujoIngMensual)]
+    ])}
+    ${block(T("bVenta"), [
+      ["Valor cobrado por lote", M(D.precioCobroLote)],
+      ["Pie (" + nf0.format(S.pie) + "%)", M(D.pie)],
+      ["Saldo a financiar", M(D.saldo)],
+      ["Cuotas fijas", nf0.format(S.cuotas) + " meses"],
+      ["Valor cuota mensual", M(D.cuota)],
+      ["Recaudación por lote", M(D.pie + D.cuota*S.cuotas)]
+    ])}
+    ${block(T("bResumen"), [
+      ["Costo predio", M(D.landCost)],
+      ["Venta estimada unitaria", M(D.pvp)],
+      ...(D.ventaAguaTotal ? [["Ingreso total por agua", M(D.ventaAguaTotal)]] : []),
+      ...(D.ingresoEdificacion ? [["Ingreso por edificación", M(D.ingresoEdificacion)]] : []),
+      ["Venta total estimada", M(D.ventaTotal)],
+      ["Gastos comercialización (" + nf0.format(S.com) + "%)", "−" + M(D.gastoCom)],
+      ["Gastos de habilitación (" + nf0.format(S.hab) + "%)", "−" + M(D.gastoHab)],
+      ["Total de gastos", "−" + M(D.totalGastos)],
+      ["__tot|Resumen " + T("tPropietario"), M(D.resumenProp)],
+      ["Margen neto %", pctRaw(D.margenNetoPct)],
+      ...ownerEarningsRows(D),
+      ["__tot|Resultado total " + T("tPropietario"), M(D.resultadoProp)]
+    ])}`;
+
+  /* --- composición --- */
+  const parts = chartCompo(document.getElementById("cwCompo"), D);
+  document.getElementById("compoKeys").innerHTML = parts.map(([n,f,v,c]) =>
+    `<div class="key"><i style="background:${c}"></i><div><div class="m">${M(v)}</div><div class="t">${n} · ${pctRaw(f)}</div></div></div>`).join("");
+
+  /* --- gráficos de serie --- */
+  const g = (id,tid) => [document.getElementById(id), document.getElementById(tid)];
+  const [w1,t1] = g("cw1","tip1");
+  const F1 = chartFlujo(w1, D); w1.appendChild(t1);
+  bindHover(w1, t1, F1, D.H, m => `<h4>${mesLabel(m)}</h4>
+    <div class="r"><span>Lotes vendidos</span><b>${nf1.format(D.vendidos[m])}</b></div>
+    <div class="r"><span>Pies</span><b>${M(D.pies[m])}</b></div>
+    <div class="r"><span>Cuotas fijas</span><b>${M(D.cuotas[m])}</b></div>
+    ${D.otrosIngresos[m] ? `<div class="r"><span>Edificación</span><b>${M(D.otrosIngresos[m])}</b></div>` : ""}
+    <div class="r sep"><span>Recaudación</span><b>${M(D.rec[m])}</b></div>
+    <div class="r"><span>Comercialización</span><b>−${M(D.egCom[m])}</b></div>
+    <div class="r"><span>${esc(Tcap("tAportante"))}</span><b>−${M(D.egProp[m])}</b></div>
+    <div class="r"><span>Obras</span><b>−${M(D.egObra[m])}</b></div>
+    <div class="r sep"><span>Flujo neto</span><b class="${D.neto[m]>=0?'pos':'neg'}">${M(D.neto[m])}</b></div>`);
+
+  const [wo,to] = g("cwOrig","tipOrig");
+  const FO = chartOrigen(wo, D); wo.appendChild(to);
+  bindHover(wo, to, FO, D.H, m => `<h4>${mesLabel(m)}</h4>
+    <div class="r"><span>Pies</span><b>${M(D.pies[m])}</b></div>
+    <div class="r"><span>Cuotas fijas</span><b>${M(D.cuotas[m])}</b></div>
+    ${D.otrosIngresos[m] ? `<div class="r"><span>Ingresos adicionales</span><b>${M(D.otrosIngresos[m])}</b></div>` : ""}
+    <div class="r sep"><span>Total del mes</span><b>${M(D.rec[m])}</b></div>`);
+
+  const [w2,t2] = g("cw2","tip2");
+  const F2 = chartCaja(w2, D); w2.appendChild(t2);
+  bindHover(w2, t2, F2, D.H, m => {
+    const hs = D.hitos.filter(x => x.mes === m);
+    return `<h4>${mesLabel(m)}</h4>
+      <div class="r"><span>Caja acumulada</span><b class="${D.caja[m]>=0?'pos':'neg'}">${M(D.caja[m])}</b></div>
+      <div class="r"><span>Flujo del mes</span><b>${M(D.neto[m])}</b></div>
+      <div class="r"><span>Lotes acumulados</span><b>${nf1.format(D.acumLotes[m])} / ${D.lotes}</b></div>
+      ${hs.length ? `<div class="r sep"><span style="color:var(--s-egreso)">Ejecuta</span><b>${esc(hs.map(x=>x.nombre).join(", "))}</b></div>` : ""}`;
+  });
+  document.getElementById("noteCaja").textContent =
+    `Máximo ${M(D.cajaMax)}${D.mesCajaMax ? " en " + mesLabel(D.mesCajaMax) : ""} · horizonte ${D.H} meses`;
+
+  const [wc,tc] = g("cwColoc","tipColoc");
+  const FC = chartColoc(wc, D); wc.appendChild(tc);
+  bindHover(wc, tc, FC, D.H, m => `<h4>${mesLabel(m)}</h4>
+    <div class="r"><span>Vendidos acumulados</span><b>${nf1.format(D.acumLotes[m])}</b></div>
+    <div class="r"><span>Stock por colocar</span><b>${nf1.format(D.lotes - D.acumLotes[m])}</b></div>
+    <div class="r sep"><span>Avance</span><b>${pctRaw(D.lotes ? D.acumLotes[m]/D.lotes : 0)}</b></div>`);
+  document.getElementById("noteColoc").textContent =
+    `${nf1.format(D.velLotes)} lotes/mes · colocación completa en ${nf1.format(D.mesesVenta)} meses`;
+
+  const [wp,tp] = g("cwProp","tipProp");
+  const FP = chartProp(wp, D); wp.appendChild(tp);
+  bindHover(wp, tp, FP, D.H, m => `<h4>${mesLabel(m)}</h4>
+    <div class="r"><span>Pago del mes</span><b>${M(D.egProp[m])}</b></div>
+    <div class="r"><span>Acumulado recibido</span><b>${M(D.propAcum[m])}</b></div>
+    <div class="r sep"><span>Por enterar</span><b>${M(Math.max(0, D.propTotalObjetivo - D.propAcum[m]))}</b></div>`);
+  chartPropBar(document.getElementById("cwPropBar"), D);
+  document.getElementById("noteProp").textContent = D.mesPropFull
+    ? `Queda pagado al 100% en ${mesLabel(D.mesPropFull)}`
+    : `Al mes ${D.H} quedan ${M(D.propTotalObjetivo - D.propPagado)} por enterar`;
+
+  /* --- tabla de hitos --- */
+  const hrows = D.hitos.map(h => `<tr>
+      <td>${esc(h.nombre)}</td><td>${M(h.costo)}</td><td>${h.auto ? "Auto" : "Fijo"}</td>
+      <td>${h.mes ? mesLabel(h.mes) : "—"}</td>
+      <td>${h.mes ? M(D.caja[h.mes] + h.costo) : "—"}</td>
+      <td>${h.mes ? M(D.caja[h.mes]) : "—"}</td>
+      <td style="text-align:left">${h.mes ? (h.auto ? '<span class="chip ok">Financiado</span>' : '<span class="chip wait">Mes fijo</span>') : '<span class="chip no">Sin fondos</span>'}</td>
+    </tr>`).join("");
+  document.getElementById("tHitos").innerHTML = `
+    <thead><tr><th>Hito</th><th>Costo</th><th>Modo</th><th>Mes de ejecución</th><th>Caja antes</th><th>Caja después</th><th style="text-align:left">Estado</th></tr></thead>
+    <tbody>${hrows || '<tr><td colspan="7" style="color:var(--ink-3)">Sin hitos cargados.</td></tr>'}</tbody>
+    <tfoot><tr><td>Total obras</td><td>${M(D.totalHitos)}</td><td colspan="5" style="text-align:left;font-weight:400">
+      Presupuesto de habilitación ${M(D.gastoHab)} · diferencia ${M(D.gastoHab - D.totalHitos)}</td></tr></tfoot>`;
+
+  /* --- tabla de flujo --- */
+  let rows = "";
+  for (let m = 1; m <= D.H; m++){
+    const eg = D.egCom[m]+D.egProp[m]+D.egObra[m];
+    if (D.rec[m] === 0 && eg === 0 && m > D.mVentaFin && D.caja[m] === D.caja[m-1]) continue;
+    rows += `<tr class="${D.vendidos[m] > 0 ? "sale" : ""}">
+      <td>${m}</td><td>${D.vendidos[m] ? nf1.format(D.vendidos[m]) : "—"}</td><td>${nf1.format(D.acumLotes[m])}</td>
+      <td>${D.pies[m] ? M(D.pies[m]) : "—"}</td><td>${D.cuotas[m] ? M(D.cuotas[m]) : "—"}</td><td>${D.otrosIngresos[m] ? M(D.otrosIngresos[m]) : "—"}</td>
+      <td><b>${M(D.rec[m])}</b></td>
+      <td>${D.egCom[m] ? "−"+M(D.egCom[m]) : "—"}</td>
+      <td>${D.egProp[m] ? "−"+M(D.egProp[m]) : "—"}</td>
+      <td>${D.egObra[m] ? "−"+M(D.egObra[m]) : "—"}</td>
+      <td class="${D.neto[m]>=0?'pos':'neg'}">${M(D.neto[m])}</td>
+      <td class="${D.caja[m]>=0?'':'neg'}"><b>${M(D.caja[m])}</b></td></tr>`;
+  }
+  document.getElementById("tFlujo").innerHTML = `
+    <thead><tr><th>Mes</th><th>Lotes</th><th>Acum.</th><th>Pies</th><th>Cuotas fijas</th><th>Otros ingresos</th>
+    <th>Recaudación</th><th>Comercial.</th><th>${esc(Tcap("tAportante"))}</th><th>Obras</th><th>Flujo neto</th><th>Caja acum.</th></tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr><td>Total</td><td>${nf0.format(D.lotes)}</td><td></td>
+      <td>${M(D.piesTotal)}</td><td>${M(D.cuotasTotal)}</td><td>${M(D.otrosIngresosTotal)}</td><td>${M(D.recTotal)}</td>
+      <td>−${M(D.comTotal)}</td><td>−${M(D.propPagado)}</td><td>−${M(D.obraTotal)}</td>
+      <td>${M(D.recTotal - D.comTotal - D.propPagado - D.obraTotal)}</td><td>${M(D.caja[D.H])}</td></tr></tfoot>`;
+  document.getElementById("noteTabla").textContent = `Escenario ${cur.e.label} · ${D.H} meses · recaudación total ${M(D.recTotal)}`;
+
+  /* --- textos del panel lateral --- */
+  const B = Ds[1].D;
+  renderAdditionalIncomeControls(B);
+  document.getElementById("d_predio").innerHTML = `Ingresado <b>${landPriceBasisLabel(S)}</b> · Total predio <b>${M(B.landCost)}</b> · Costo Ha <b>${M(B.costoHa)}</b> · Costo lote <b>${M(B.costoLote)}</b>`;
+  document.getElementById("d_negocio").innerHTML = `<b>${nf1.format(B.velLotes)}</b> lotes/mes · venta en <b>${nf1.format(B.mesesVenta)}</b> meses · PVP <b>${ufv(B.pvp)}</b>${B.ingresosAdicionales ? ` · extras <b>${M(B.ingresosAdicionales)}</b>` : ""}`;
+  document.getElementById("d_venta").innerHTML = `Pie <b>${M(B.pie)}</b> · cuota <b>${M(B.cuota)}</b> × ${nf0.format(S.cuotas)} meses${B.precioAguaUnitario ? ` · incluye agua ${M(B.precioAguaUnitario)}` : ""}`;
+  document.getElementById("d_esc").innerHTML =
+    `Conservador <b>${nf1.format(Ds[0].D.velLotes)}</b> lotes/mes a <b>${M(Ds[0].D.pvp)}</b> · Optimista <b>${nf1.format(Ds[2].D.velLotes)}</b> a <b>${M(Ds[2].D.pvp)}</b>`;
+  const pctNec = B.ventaTotal ? B.resultadoProp/B.ventaTotal*100 : 0;
+  document.getElementById("d_prop").innerHTML = S.propModo === "prorrata"
+    ? `Para cubrir los <b>${M(B.resultadoProp)}</b> del caso base se requiere retener <b>${nf1.format(pctNec)}%</b> de la recaudación.`
+    : `Total comprometido <b>${M(B.propTotalObjetivo)}</b> · pagado al mes ${B.H}: <b>${M(B.propPagado)}</b>.`;
+  const dif = D.gastoHab - D.totalHitos;
+  document.getElementById("budgetBox").innerHTML = `
+    <div class="line"><span>Presupuesto habilitación (${nf1.format(S.hab)}%)</span><b>${M(D.gastoHab)}</b></div>
+    <div class="line"><span>Hitos cargados</span><b>${M(D.totalHitos)}</b></div>
+    <div class="line"><span>Diferencia</span><b class="${dif>=0?'pos':'neg'}">${M(dif)}</b></div>`;
+  applyMesaAccess();
+}
+function projName(p, i){ return (p.state.nombre || "").trim() || `Proyecto ${i+1}`; }
+function renderProjects(){
+  const sel = document.getElementById("projSelect");
+  sel.innerHTML = STORE.projects.map((p,i) =>
+    `<option value="${p.id}"${p.id===STORE.activeId?" selected":""}>${esc(projName(p,i))}</option>`).join("");
+  document.getElementById("btnDel").disabled = STORE.projects.length < 2;
+  const carteraPanel = document.getElementById("carteraPanel");
+  if (!carteraPanel || carteraPanel.hidden) return;
+
+  const rows = STORE.projects.map((p,i) => {
+    const d = model(p.state);
+    const act = p.id === STORE.activeId;
+    return `<tr class="rowlink${act?" act":""}" data-id="${p.id}">
+      <th>${esc(projName(p,i))}</th>
+      <td style="text-align:left">${esc(p.state.region || "—")}</td>
+      <td>${nf2.format(p.state.ha)}</td>
+      <td>${nf0.format(Math.round(p.state.lotes))}</td>
+      <td>${M(d.landCost)}</td>
+      <td>${M(d.pvp)}</td>
+      <td>${M(d.ventaTotal)}</td>
+      <td>${pctRaw(d.mgPct)}</td>
+      <td><b>${M(d.resultadoProp)}</b></td>
+      <td>${pctRaw(d.margenNetoPct)}</td>
+      <td>${nf1.format(d.mesesVenta)}</td>
+      <td>${M(d.cajaMax)}</td>
+      <td>${d.mesUltHito ? "M"+d.mesUltHito : "no alcanza"}</td>
+    </tr>`;
+  }).join("");
+  document.getElementById("tCartera").innerHTML = `
+    <thead><tr><th>Predio</th><th style="text-align:left">Región</th><th>Ha</th><th>Lotes</th><th>Precio predio</th>
+    <th>PVP lote</th><th>Venta total</th><th>MG bruto</th><th>Resultado ${esc(T("tAportante"))}</th><th>MG neto</th>
+    <th>Meses venta</th><th>Caja máx.</th><th>Obras</th></tr></thead><tbody>${rows}</tbody>`;
+  document.querySelectorAll("#tCartera tr.rowlink").forEach(tr =>
+    tr.addEventListener("click", () => setActive(tr.dataset.id)));
+  document.getElementById("noteCartera").textContent = STORE.projects.length > 1
+    ? `${STORE.projects.length} proyectos · escenario base · haz clic en una fila para abrirla`
+    : "Usa + Nuevo o Duplicar para evaluar otro predio y compararlos aquí";
+}
+function kpi(k,v,n,hero){ return `<div class="kpi${hero?" hero":""}"><div class="k">${k}</div><div class="v num">${v}</div><div class="n">${n}</div></div>`; }
+function block(title, rows){
+  return `<div class="block"><h3>${title}</h3><dl class="dl">${rows.map(([k,v]) => {
+    const tot = k.startsWith("__tot|");
+    return `<div class="${tot?"tot":""}"><dt>${tot?k.slice(6):k}</dt><dd>${v}</dd></div>`;
+  }).join("")}</dl></div>`;
+}
+
+/* ============================== lista de precios ============================== */
+const priceReferencesOpen = new Set();
+function canEditPriceList(){ return window.VICAPER_ACCESS?.canEdit !== false; }
+function priceReferenceKey(index){ return STORE.activeId + ":" + index; }
+let pendingPriceDelete = null;
+function confirmPriceListDelete(label, action){
+  if (!canEditPriceList()) return;
+  pendingPriceDelete = action;
+  document.getElementById("priceDeleteText").textContent = `¿Estás seguro de eliminar ${label}?`;
+  document.getElementById("priceDeleteDialog").showModal();
+}
+document.getElementById("cancelPriceDelete").addEventListener("click", () => document.getElementById("priceDeleteDialog").close());
+document.getElementById("priceDeleteDialog").addEventListener("close", () => {pendingPriceDelete=null;});
+document.getElementById("confirmPriceDelete").addEventListener("click", () => {
+  const action = pendingPriceDelete;
+  pendingPriceDelete = null;
+  document.getElementById("priceDeleteDialog").close();
+  if (action && canEditPriceList()) action();
+});
+
+function renderPriceList(){
+  const summary = priceListSummary(S), uf = Math.max(0, Number(S.uf)||0);
+  document.getElementById("priceListPanel").classList.toggle("price-list-empty", !summary.categories.length);
+  const body = document.getElementById("priceListBody");
+  const activeInput = document.activeElement;
+  const editing = activeInput && body.contains(activeInput) && activeInput.tagName === "INPUT";
+  document.getElementById("usePriceList").checked = !!S.usarListaPrecios;
+  document.getElementById("priceListUf").innerHTML = `Valor UF del proyecto: <strong>${uf>0 ? "$"+nf2.format(uf) : "sin definir"}</strong>`;
+  const status = document.getElementById("priceListStatus");
+  status.dataset.tone = S.usarListaPrecios && !summary.valid ? "warn" : "";
+  status.textContent = !summary.categories.length ? "Agrega categorías para distribuir los lotes y sus precios."
+    : !S.usarListaPrecios ? "Lista guardada como referencia. El proyecto usa el PVP general."
+    : !summary.valid ? (summary.assigned>summary.stock
+      ? `Las categorías superan el stock en ${nf0.format(summary.assigned-summary.stock)} lotes. Ajusta las cantidades; mientras tanto se usa el PVP general.`
+      : "Define un valor UF mayor que cero para aplicar la lista. Mientras tanto se usa el PVP general.")
+    : summary.missing ? `${nf0.format(summary.missing)} ${summary.missing===1?"lote sin categoría mantiene":"lotes sin categoría mantienen"} el PVP general de ${clp(S.pvp)}.`
+    : "Todos los lotes distribuidos. El precio promedio se calcula desde esta lista.";
+
+  const lockedPvp = summary.applied && summary.missing === 0;
+  const pvpInput = document.getElementById("i_pvp");
+  pvpInput.readOnly = lockedPvp;
+  if (document.activeElement !== pvpInput) pvpInput.value = nf0.format(lockedPvp ? summary.pvp : S.pvp);
+  document.getElementById("pvpLabel").innerHTML = `${lockedPvp ? "PVP promedio de la lista" : "PVP unitario"} <span class="u">(CLP/lote)</span>`;
+  const hint = document.getElementById("pvpListHint");
+  hint.hidden = !summary.applied;
+  hint.textContent = lockedPvp ? "Se actualiza al editar las categorías." : `Promedio con la lista: ${clp(summary.pvp)} por lote.`;
+
+  if (!editing){
+    body.innerHTML = summary.categories.map((row,index) => {
+      const open = priceReferencesOpen.has(priceReferenceKey(index));
+      const refs = Array.isArray(row.precios) ? row.precios : [];
+      return `<tr data-category-row="${index}">
+        <td><input class="price-name txt" type="text" data-category-field="nombre" value="${esc(row.nombre||"")}" aria-label="Nombre categoría ${index+1}"></td>
+        <td><div class="price-quantity"><input type="text" inputmode="numeric" data-category-field="cant" aria-label="Cantidad categoría ${index+1}"><input type="text" inputmode="decimal" data-category-field="pct" aria-label="Porcentaje categoría ${index+1}" title="Porcentaje del total de lotes del proyecto"><span>%</span></div></td>
+        <td><div class="price-unit"><div class="seg" role="group" aria-label="Moneda categoría ${index+1}"><button type="button" data-category-action="clp" aria-pressed="${!row.precioModoUF}">$</button><button type="button" data-category-action="uf" aria-pressed="${!!row.precioModoUF}">UF</button></div><input type="text" inputmode="decimal" data-category-field="precio" aria-label="Precio categoría ${index+1}"></div><span class="price-equivalent" data-category-equivalent></span></td>
+        <td data-category-total></td>
+        <td><div class="price-share"><div class="price-share-track"><i data-category-share-bar></i></div><span data-category-share></span></div></td>
+        <td><button type="button" class="btn mini price-reference-toggle" data-category-action="references" aria-expanded="${open}" aria-label="Precios alternativos categoría ${index+1}">${open?"▾":"▸"} ${refs.length}</button></td>
+        <td><button type="button" class="price-delete" data-category-action="delete" aria-label="Eliminar categoría ${index+1}" title="Eliminar categoría">×</button></td>
+      </tr>${open ? `<tr data-category-row="${index}"><td colspan="7" class="price-reference-cell">
+        ${refs.map((ref,refIndex) => `<div class="price-reference-row" data-reference-index="${refIndex}">
+          <label><input type="radio" name="price-ref-${index}" data-reference-field="vigente" ${ref.vigente?"checked":""}> Vigente</label>
+          <input class="txt" type="text" data-reference-field="etiqueta" value="${esc(ref.etiqueta||"")}" aria-label="Nombre precio ${refIndex+1} categoría ${index+1}" placeholder="Lanzamiento, campaña, lista…">
+          <input type="text" inputmode="decimal" data-reference-field="valor" value="${nf2.format(Number(ref.valor)||0)}" aria-label="Valor precio ${refIndex+1} categoría ${index+1}"><span>${ref.modoUF?"UF":"CLP"}</span>
+          <button type="button" class="price-delete" data-category-action="delete-reference" aria-label="Eliminar precio ${refIndex+1} categoría ${index+1}">×</button>
+        </div>`).join("")}
+        <button type="button" class="btn mini" data-category-action="add-reference">+ Agregar precio alternativo</button>
+        <p class="price-reference-note">Precios referenciales. El cálculo usa el precio unitario de la categoría, incluso si marcas otro precio como vigente.</p>
+      </td></tr>` : ""}`;
+    }).join("") || `<tr><td colspan="7" class="price-empty">Sin categorías registradas. El proyecto conserva su cantidad de lotes y PVP actual.</td></tr>`;
+    if (summary.categories.length){
+      body.insertAdjacentHTML("beforeend", `<tr class="price-unassigned" ${summary.missing?"":"hidden"}><td>Sin categoría (PVP general)</td><td>${nf0.format(summary.missing)} · ${nf1.format(summary.stock ? summary.missing/summary.stock*100 : 0)}%</td><td>${clp(S.pvp)}</td><td>${clp(summary.missing*S.pvp)}</td><td colspan="3">Pendiente de distribuir</td></tr>`);
+    }
+  }
+  body.querySelectorAll("tr[data-category-row]").forEach(tr => {
+    const row = summary.categories[Number(tr.dataset.categoryRow)];
+    if (!tr.querySelector("[data-category-total]") || !row) return;
+    const qty = Math.max(0, Math.round(Number(row.cant)||0));
+    const price = categoryUnitPrice(row,uf), amount = qty*price;
+    for (const [field,value] of [["cant",nf0.format(qty)],["pct",nf1.format(summary.stock ? qty/summary.stock*100 : 0)],["precio",row.precioModoUF ? nf2.format(Number(row.precioUF)||0) : nf0.format(price)]]){
+      const input = tr.querySelector(`[data-category-field="${field}"]`);
+      if (input !== activeInput) input.value = value;
+    }
+    tr.querySelector("[data-category-equivalent]").textContent = row.precioModoUF ? "≈ "+clp(price) : uf>0 ? "≈ "+nf2.format(price/uf)+" UF" : "";
+    tr.querySelector("[data-category-total]").textContent = clp(amount);
+    const fullTotal = summary.categoryTotal + summary.missing * Math.max(0,Number(S.pvp)||0);
+    const percent = fullTotal>0 ? amount/fullTotal*100 : 0;
+    tr.querySelector("[data-category-share]").textContent = nf0.format(percent)+"%";
+    tr.querySelector("[data-category-share-bar]").style.width = Math.min(100,percent)+"%";
+  });
+  // La fila pendiente también se refresca mientras se edita una cantidad.
+  const pendingRow = body.querySelector(".price-unassigned");
+  if (editing && pendingRow){
+    pendingRow.hidden = !summary.missing;
+    pendingRow.cells[1].textContent = nf0.format(summary.missing)+" · "+nf1.format(summary.stock?summary.missing/summary.stock*100:0)+"%";
+    pendingRow.cells[2].textContent = clp(S.pvp);
+    pendingRow.cells[3].textContent = clp(summary.missing*S.pvp);
+  }
+  const listedTotal = summary.categoryTotal + summary.missing * Math.max(0,Number(S.pvp)||0);
+  const weighted = summary.stock>0 ? listedTotal/summary.stock : 0;
+  document.getElementById("priceListTotals").innerHTML = `<tr><td>Total comercializado</td><td>${nf0.format(summary.assigned+summary.missing)}</td><td><b>${clp(weighted)}</b><div class="price-total-summary">Promedio ponderado${uf>0 ? " ≈ "+nf1.format(weighted/uf)+" UF" : ""}</div></td><td>${clp(listedTotal)}</td><td colspan="3">${summary.valid ? "100% del plan" : "Revisar distribución"}</td></tr>`;
+  applyMesaAccess();
+}
+
+document.getElementById("usePriceList").addEventListener("change", event => {
+  if (!canEditPriceList()) return;
+  S.usarListaPrecios = event.target.checked;
+  render();
+});
+document.getElementById("addPriceCategory").addEventListener("click", () => {
+  if (!canEditPriceList()) return;
+  if (!Array.isArray(S.categoriasPrecios)) S.categoriasPrecios = [];
+  const summary = priceListSummary(S), first = !summary.categories.length;
+  S.categoriasPrecios.push({id:uid(), nombre:`Nueva categoría ${S.categoriasPrecios.length+1}`, cant:summary.missing, precio:Number(S.pvp)||0, precioModoUF:false, precioUF:0, precios:[]});
+  if (first) S.usarListaPrecios = true;
+  render();
+});
+document.getElementById("priceListBody").addEventListener("input", event => {
+  if (!canEditPriceList()) return;
+  const input = event.target, tr = input.closest("[data-category-row]");
+  if (!tr) return;
+  const index = Number(tr.dataset.categoryRow), row = S.categoriasPrecios[index];
+  if (!row) return;
+  if (input.dataset.referenceField){
+    const refIndex = Number(input.closest("[data-reference-index]").dataset.referenceIndex);
+    const ref = row.precios[refIndex], field = input.dataset.referenceField;
+    if (field === "vigente") row.precios.forEach((ref,i) => {ref.vigente=i===refIndex;});
+    else ref[field] = field === "etiqueta" ? input.value : Math.max(0,parseNum(input.value));
+  } else {
+    const field = input.dataset.categoryField;
+    if (field === "nombre") row.nombre = input.value;
+    else if (field === "precio") row[row.precioModoUF ? "precioUF" : "precio"] = Math.max(0,parseNum(input.value));
+    else if (field === "cant" || field === "pct"){
+      const stock = Math.max(0,Math.round(Number(S.lotes)||0));
+      const others = S.categoriasPrecios.reduce((n,r,i) => n+(i===index?0:Math.max(0,Math.round(Number(r.cant)||0))),0);
+      const qty = field === "pct" ? Math.round(stock*Math.max(0,parseNum(input.value))/100) : Math.round(parseNum(input.value));
+      row.cant = Math.max(0,Math.min(Math.max(0,stock-others),qty));
+    } else return;
+  }
+  render();
+});
+document.getElementById("priceListBody").addEventListener("focusout", event => {
+  const input = event.target, tr = input.closest("[data-category-row]");
+  if (!tr || input.type === "radio") return;
+  const row = S.categoriasPrecios?.[Number(tr.dataset.categoryRow)];
+  if (!row) return;
+  const field = input.dataset.categoryField;
+  if (field === "cant") input.value = nf0.format(row.cant);
+  if (field === "pct") input.value = nf1.format(S.lotes>0?row.cant/S.lotes*100:0);
+  if (field === "precio") input.value = row.precioModoUF ? nf2.format(row.precioUF||0) : nf0.format(row.precio||0);
+});
+document.getElementById("priceListBody").addEventListener("click", event => {
+  const button = event.target.closest("[data-category-action]"), tr = button?.closest("[data-category-row]");
+  if (!tr) return;
+  const index = Number(tr.dataset.categoryRow), row = S.categoriasPrecios[index], action = button.dataset.categoryAction;
+  if (action === "references"){
+    const key = priceReferenceKey(index);
+    if (priceReferencesOpen.has(key)) priceReferencesOpen.delete(key); else priceReferencesOpen.add(key);
+    renderPriceList(); return;
+  }
+  if (!canEditPriceList()) return;
+  if (action === "delete"){
+    confirmPriceListDelete(`la categoría «${row.nombre||"Sin nombre"}»`, () => {
+      S.categoriasPrecios.splice(index,1);
+      priceReferencesOpen.clear();
+      if (!S.categoriasPrecios.length) S.usarListaPrecios = false;
+      render();
+    });
+    return;
+  } else if (action === "clp" || action === "uf"){
+    const uf = Math.max(0,Number(S.uf)||0), useUF = action === "uf";
+    if (useUF === !!row.precioModoUF) return;
+    if (useUF && !uf){window.alert("Ingresa primero un valor UF mayor que cero en los detalles del predio.");return;}
+    const price = categoryUnitPrice(row,uf);
+    row.precio = price; row.precioUF = uf>0 ? price/uf : 0; row.precioModoUF = useUF;
+  } else if (action === "add-reference"){
+    if (!Array.isArray(row.precios)) row.precios = [];
+    row.precios.push({id:uid(), etiqueta:"Nuevo precio", valor:row.precioModoUF ? Number(row.precioUF)||0 : Number(row.precio)||0, modoUF:!!row.precioModoUF, vigente:!row.precios.length});
+  } else if (action === "delete-reference"){
+    const refIndex = Number(button.closest("[data-reference-index]").dataset.referenceIndex);
+    confirmPriceListDelete(`el precio «${row.precios[refIndex].etiqueta||"Sin nombre"}»`, () => {
+      row.precios.splice(refIndex,1);
+      render();
+    });
+    return;
+  }
+  render();
+});
+
+/* ============================== hitos UI ============================== */
+function renderHitos(){
+  const wrap = document.getElementById("hitosList");
+  wrap.innerHTML = S.hitos.map((h,i) => `
+    <div class="hito" data-i="${i}">
+      <input class="txt" type="text" data-k="n" value="${esc(h.n)}" aria-label="Nombre del hito ${i+1}">
+      <input type="text" data-k="c" value="${nf0.format(h.c)}" inputmode="numeric" aria-label="Costo del hito ${i+1}">
+      <input class="txt" type="text" data-k="m" value="${h.m}" aria-label="Mes del hito ${i+1}" title="Escriba auto o un número de mes">
+      <button type="button" class="del" data-i="${i}" aria-label="Eliminar hito ${i+1}">×</button>
+    </div>`).join("");
+  wrap.querySelectorAll("input").forEach(inp => inp.addEventListener("change", e => {
+    const i = +e.target.closest(".hito").dataset.i, k = e.target.dataset.k;
+    if (k === "c") S.hitos[i].c = parseNum(e.target.value);
+    else if (k === "m"){
+      const raw = String(e.target.value).trim().toLowerCase();
+      S.hitos[i].m = (raw === "auto" || raw === "" || !isFinite(parseNum(raw)) || parseNum(raw) < 1) ? "auto" : Math.round(parseNum(raw));
+    } else S.hitos[i].n = e.target.value;
+    renderHitos(); render();
+  }));
+  wrap.querySelectorAll(".del").forEach(b => b.addEventListener("click", e => {
+    S.hitos.splice(+e.currentTarget.dataset.i, 1); renderHitos(); render();
+  }));
+  applyMesaAccess();
+}
+document.getElementById("btnAddHito").addEventListener("click", () => {
+  S.hitos.push({n:"Nuevo hito", c:10000000, m:"auto"}); renderHitos(); render();
+});
+
+/* ============================== inputs ============================== */
+const FIELDS = [
+  ["i_nombre","nombre","txt"], ["i_region","region","txt"],
+  ["i_ha","ha","dec2"], ["i_lotes","lotes","int"], ["i_uf","uf","money"],
+  ["i_pvp","pvp","money"], ["i_vel","vel","dec"], ["i_iniVenta","iniVenta","int"],
+  ["i_com","com","dec"], ["i_hab","hab","dec"],
+  ["i_pie","pie","dec"], ["i_cuotas","cuotas","int"],
+  ["i_sensVel","sensVel","dec"], ["i_sensPvp","sensPvp","dec"],
+  ["i_propPct","propPct","dec"], ["i_propDesde","propDesde","int"],
+  ["i_propN","propN","int"], ["i_propMes","propMes","int"], ["i_propMesC","propMesC","int"]
+];
+const fmtField = (kind,v) => kind === "money" || kind === "int" ? nf0.format(v) : kind === "dec2" ? nf2.format(v) : kind === "dec" ? nf1.format(v) : v;
+function landPriceInputText(state){
+  const entered = Math.max(0, Number(state.precioEntrada)||0);
+  if (landPriceMode(state) === "clp_total") return nf0.format(Math.round(entered));
+  if (landPriceMode(state) === "uf_m2") return nf4.format(entered);
+  return nf2.format(entered);
+}
+function renderLandPriceControl(){
+  const input = document.getElementById("i_precio");
+  const modeSelect = document.getElementById("i_precioModo");
+  const derived = document.getElementById("d_precio");
+  if (!input || !modeSelect || !derived || !S) return;
+  S.precioModo = landPriceMode(S);
+  if (S.precioEntrada === null || S.precioEntrada === undefined || !isFinite(Number(S.precioEntrada))){
+    S.precioEntrada = landPriceEntryFromTotal(S.precioModo, Number(S.precio)||0, S);
+  }
+  const total = syncLandPrice(S);
+  modeSelect.value = S.precioModo;
+  input.inputMode = S.precioModo === "clp_total" ? "numeric" : "decimal";
+  if (document.activeElement !== input) input.value = landPriceInputText(S);
+  if (S.precioModo === "uf_m2"){
+    const squareMeters = Math.max(0, Number(S.ha)||0) * 10000;
+    const totalUf = S.uf > 0 ? total / S.uf : 0;
+    derived.textContent = nf0.format(squareMeters) + " m² × " + nf4.format(S.precioEntrada) + " UF/m² = " + nf2.format(totalUf) + " UF ≈ " + clp(total);
+  } else if (S.precioModo === "uf_total"){
+    derived.textContent = "Total predio ≈ " + clp(total);
+  } else {
+    derived.textContent = S.uf > 0 ? "Total predio ≈ " + nf2.format(total/S.uf) + " UF" : "Costo total del predio";
+  }
+}
+function paint(){
+  FIELDS.forEach(([id,key,kind]) => {
+    const el = document.getElementById(id);
+    // Una actualización de la nube puede llegar mientras se está escribiendo.
+    // Nunca reemplazamos el borrador ni movemos el cursor del campo activo.
+    if (el && document.activeElement !== el) el.value = fmtField(kind, S[key]);
+  });
+  document.getElementById("i_propModo").value = S.propModo;
+  renderLandPriceControl();
+  renderAdditionalIncomeControls();
+  toggleProp();
+}
+
+function renderAdditionalIncomeControls(baseModel){
+  const extras = additionalIncome(S);
+  const waterOn = !!S.vendeAgua;
+  const buildingOn = !!S.vendeEdificacion;
+  document.getElementById("aguaNo").setAttribute("aria-pressed", String(!waterOn));
+  document.getElementById("aguaSi").setAttribute("aria-pressed", String(waterOn));
+  document.getElementById("aguaFields").hidden = !waterOn;
+  document.getElementById("d_agua").hidden = !waterOn;
+  document.getElementById("aguaClp").setAttribute("aria-pressed", String(!S.precioAguaModoUF));
+  document.getElementById("aguaUf").setAttribute("aria-pressed", String(!!S.precioAguaModoUF));
+  const aguaInput = document.getElementById("i_agua");
+  if (document.activeElement !== aguaInput) aguaInput.value = S.precioAguaModoUF
+    ? nf2.format(Number(S.precioVentaAguaUFFijo)||0)
+    : nf0.format(Number(S.precioVentaAgua)||0);
+  document.getElementById("d_agua").innerHTML = `Por lote <b>${clp(extras.waterUnit)}</b>${S.uf>0 ? ` · ${nf2.format(extras.waterUnit/S.uf)} UF` : ""} · ingreso total <b>${clp(extras.waterTotal)}</b>`;
+
+  document.getElementById("edificacionNo").setAttribute("aria-pressed", String(!buildingOn));
+  document.getElementById("edificacionSi").setAttribute("aria-pressed", String(buildingOn));
+  document.getElementById("edificacionFields").hidden = !buildingOn;
+  document.getElementById("d_edificacion").hidden = !buildingOn;
+  document.getElementById("edificacionClp").setAttribute("aria-pressed", String(!S.edificacionModoUF));
+  document.getElementById("edificacionUf").setAttribute("aria-pressed", String(!!S.edificacionModoUF));
+  const edificacionInput = document.getElementById("i_edificacion");
+  if (document.activeElement !== edificacionInput) edificacionInput.value = S.edificacionModoUF
+    ? nf2.format(Number(S.valorEdificacionUFFijo)||0)
+    : nf0.format(Number(S.valorEdificacion)||0);
+  document.getElementById("d_edificacion").innerHTML = `Ingreso adicional <b>${clp(extras.building)}</b>${S.uf>0 ? ` · ${nf2.format(extras.building/S.uf)} UF` : ""}`;
+}
+
+function setAdditionalIncomeMode(kind, useUF){
+  const uf = Math.max(0, Number(S.uf)||0);
+  if (kind === "water"){
+    if (useUF && !S.precioAguaModoUF) S.precioVentaAguaUFFijo = uf > 0 ? (Number(S.precioVentaAgua)||0) / uf : 0;
+    if (!useUF && S.precioAguaModoUF) S.precioVentaAgua = (Number(S.precioVentaAguaUFFijo)||0) * uf;
+    S.precioAguaModoUF = useUF;
+  } else {
+    if (useUF && !S.edificacionModoUF) S.valorEdificacionUFFijo = uf > 0 ? (Number(S.valorEdificacion)||0) / uf : 0;
+    if (!useUF && S.edificacionModoUF) S.valorEdificacion = (Number(S.valorEdificacionUFFijo)||0) * uf;
+    S.edificacionModoUF = useUF;
+  }
+  renderAdditionalIncomeControls();
+  render();
+}
+function toggleProp(){
+  document.getElementById("propProrrata").hidden = S.propModo !== "prorrata";
+  document.getElementById("propCuotas").hidden   = S.propModo !== "cuotas";
+  document.getElementById("propContado").hidden  = S.propModo !== "contado";
+}
+FIELDS.forEach(([id,key,kind]) => {
+  const el = document.getElementById(id); if (!el) return;
+  const updateField = () => {
+    if (!canEditPriceList() || (key === "pvp" && el.readOnly)) return;
+    S[key] = kind === "txt" ? el.value : parseFieldValue(kind, el.value);
+    render();
+  };
+  el.addEventListener("input", updateField);
+  el.addEventListener("change", () => {
+    updateField();
+    if (kind !== "txt" && !(key === "pvp" && el.readOnly)) el.value = fmtField(kind, S[key]);
+  });
+});
+const landPriceInput = document.getElementById("i_precio");
+const landPriceModeSelect = document.getElementById("i_precioModo");
+function updateLandPriceInput(){
+  if (!canEditPriceList()) return;
+  S.precioEntrada = S.precioModo === "clp_total"
+    ? Math.max(0, parseWholeNumber(landPriceInput.value))
+    : Math.max(0, parseNum(landPriceInput.value));
+  syncLandPrice(S);
+  render();
+}
+landPriceInput.addEventListener("input", updateLandPriceInput);
+landPriceInput.addEventListener("change", () => {
+  updateLandPriceInput();
+  landPriceInput.value = landPriceInputText(S);
+});
+landPriceModeSelect.addEventListener("change", () => {
+  if (!canEditPriceList()) return;
+  const nextMode = LAND_PRICE_MODES.includes(landPriceModeSelect.value) ? landPriceModeSelect.value : "clp_total";
+  if (nextMode !== "clp_total" && !(Number(S.uf) > 0)){
+    alert("Define primero el valor de la UF para usar esta modalidad.");
+    landPriceModeSelect.value = S.precioModo;
+    return;
+  }
+  const currentTotal = landPriceTotal(S);
+  S.precioModo = nextMode;
+  S.precioEntrada = landPriceEntryFromTotal(nextMode, currentTotal, S);
+  syncLandPrice(S);
+  render();
+  landPriceInput.focus();
+  landPriceInput.select();
+});
+document.getElementById("i_propModo").addEventListener("change", e => { S.propModo = e.target.value; toggleProp(); render(); });
+document.getElementById("aguaNo").addEventListener("click", () => { S.vendeAgua = false; renderAdditionalIncomeControls(); render(); });
+document.getElementById("aguaSi").addEventListener("click", () => { S.vendeAgua = true; renderAdditionalIncomeControls(); render(); });
+document.getElementById("edificacionNo").addEventListener("click", () => { S.vendeEdificacion = false; renderAdditionalIncomeControls(); render(); });
+document.getElementById("edificacionSi").addEventListener("click", () => { S.vendeEdificacion = true; renderAdditionalIncomeControls(); render(); });
+document.getElementById("aguaClp").addEventListener("click", () => setAdditionalIncomeMode("water", false));
+document.getElementById("aguaUf").addEventListener("click", () => setAdditionalIncomeMode("water", true));
+document.getElementById("edificacionClp").addEventListener("click", () => setAdditionalIncomeMode("building", false));
+document.getElementById("edificacionUf").addEventListener("click", () => setAdditionalIncomeMode("building", true));
+document.getElementById("i_agua").addEventListener("input", e => {
+  const value = Math.max(0, S.precioAguaModoUF ? parseNum(e.target.value) : parseWholeNumber(e.target.value));
+  if (S.precioAguaModoUF) S.precioVentaAguaUFFijo = value; else S.precioVentaAgua = value;
+});
+document.getElementById("i_agua").addEventListener("change", e => {
+  const value = Math.max(0, S.precioAguaModoUF ? parseNum(e.target.value) : parseWholeNumber(e.target.value));
+  if (S.precioAguaModoUF) S.precioVentaAguaUFFijo = value; else S.precioVentaAgua = value;
+  renderAdditionalIncomeControls(); render();
+});
+document.getElementById("i_edificacion").addEventListener("input", e => {
+  const value = Math.max(0, S.edificacionModoUF ? parseNum(e.target.value) : parseWholeNumber(e.target.value));
+  if (S.edificacionModoUF) S.valorEdificacionUFFijo = value; else S.valorEdificacion = value;
+});
+document.getElementById("i_edificacion").addEventListener("change", e => {
+  const value = Math.max(0, S.edificacionModoUF ? parseNum(e.target.value) : parseWholeNumber(e.target.value));
+  if (S.edificacionModoUF) S.valorEdificacionUFFijo = value; else S.valorEdificacion = value;
+  renderAdditionalIncomeControls(); render();
+});
+
+/* toolbar */
+function setUnit(u){
+  UNIT = u;
+  document.getElementById("uClp").setAttribute("aria-pressed", u === "CLP");
+  document.getElementById("uUf").setAttribute("aria-pressed", u === "UF");
+  render();
+}
+document.getElementById("uClp").addEventListener("click", () => setUnit("CLP"));
+document.getElementById("uUf").addEventListener("click", () => setUnit("UF"));
+document.getElementById("btnExecutive").addEventListener("click", printBrokerExecutiveSummary);
+document.getElementById("btnPrint").addEventListener("click", () => window.print());
+
+/* ---- proyectos ---- */
+document.getElementById("projSelect").addEventListener("change", e => setActive(e.target.value));
+document.getElementById("btnNew").addEventListener("click", () => {
+  const p = makeProject(DEFAULTS, "Nuevo predio " + (STORE.projects.length + 1));
+  STORE.projects.push(p); setActive(p.id);
+  const f = document.getElementById("i_nombre"); f.focus(); f.select();
+});
+document.getElementById("btnDup").addEventListener("click", () => {
+  const p = makeProject(active().state, (active().state.nombre || "Predio") + " (copia)");
+  STORE.projects.push(p); setActive(p.id);
+});
+document.getElementById("btnDel").addEventListener("click", () => {
+  if (STORE.projects.length < 2) return;
+  const i = STORE.projects.findIndex(p => p.id === STORE.activeId);
+  STORE.projects.splice(i, 1);
+  setActive(STORE.projects[Math.max(0, i-1)].id);
+});
+
+/* ---- ocultar el panel ---- */
+function setRail(hidden){
+  STORE.railHidden = hidden;
+  document.querySelector(".shell").classList.toggle("norail", hidden);
+  const b = document.getElementById("btnRail");
+  b.setAttribute("aria-pressed", String(hidden));
+  b.title = hidden ? "Mostrar el panel de parámetros" : "Ocultar el panel de parámetros";
+  b.setAttribute("aria-label", b.title);
+  b.textContent = hidden ? "☰" : "✕";
+  requestAnimationFrame(render);
+}
+document.getElementById("btnRail").addEventListener("click", () => setRail(!STORE.railHidden));
+
+/* ---- menú ---- */
+const menu = document.getElementById("menu"), btnMenu = document.getElementById("btnMenu");
+function closeMenu(){ menu.hidden = true; btnMenu.setAttribute("aria-expanded","false"); }
+btnMenu.addEventListener("click", e => {
+  e.stopPropagation();
+  menu.hidden = !menu.hidden;
+  btnMenu.setAttribute("aria-expanded", String(!menu.hidden));
+});
+document.addEventListener("click", e => { if (!menu.hidden && !menu.contains(e.target)) closeMenu(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeMenu(); });
+function say(msg){ document.getElementById("menuMsg").textContent = msg; }
+async function saveDownload({filename, data, type = "application/octet-stream"}){
+  const claudeDownloads = window.claude && window.claude.use ? await window.claude.use("downloads") : null;
+  if (claudeDownloads) return claudeDownloads.save({filename, data});
+  const blob = new Blob([data], {type});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.hidden = true;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/* ---- configurador de textos ---- */
+const cfgOverlay = document.getElementById("cfgOverlay");
+function buildCfg(){
+  document.getElementById("cfgBody").innerHTML = CFG_GROUPS.map(([titulo, campos]) => `
+    <div class="cfgroup"><h3>${esc(titulo)}</h3><div class="cfgrid">
+      ${campos.map(([k,lab]) => k === "footer"
+        ? `<div class="f wide"><label for="cfg_${k}">${esc(lab)}</label><textarea id="cfg_${k}" data-k="${k}">${esc(T(k))}</textarea></div>`
+        : `<div class="f"><label for="cfg_${k}">${esc(lab)}</label><input type="text" id="cfg_${k}" data-k="${k}" value="${esc(T(k))}"></div>`).join("")}
+    </div></div>`).join("");
+  document.querySelectorAll("#cfgBody [data-k]").forEach(el => el.addEventListener("input", () => {
+    const k = el.dataset.k, v = el.value;
+    if (v === TEXT_DEF[k]) delete STORE.texts[k]; else STORE.texts[k] = v;
+    TX = Object.assign({}, TEXT_DEF, STORE.texts);
+    applyTexts(); cfgRender();
+  }));
+  applyMesaAccess();
+}
+let cfgT;
+function cfgRender(){ clearTimeout(cfgT); cfgT = setTimeout(render, 180); }
+function openCfg(){ buildCfg(); cfgOverlay.hidden = false; closeMenu(); document.getElementById("cfg_appName").focus(); }
+function closeCfg(){ cfgOverlay.hidden = true; }
+document.getElementById("mCfg").addEventListener("click", openCfg);
+document.getElementById("cfgClose").addEventListener("click", closeCfg);
+document.getElementById("cfgDone").addEventListener("click", closeCfg);
+cfgOverlay.addEventListener("click", e => { if (e.target === cfgOverlay) closeCfg(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !cfgOverlay.hidden) closeCfg(); });
+document.getElementById("cfgReset").addEventListener("click", () => {
+  STORE.texts = {}; TX = Object.assign({}, TEXT_DEF);
+  buildCfg(); applyTexts(); render();
+});
+
+document.getElementById("mReset").addEventListener("click", () => {
+  active().state = clone(DEFAULTS); S = active().state; ESC_SEL = "base";
+  paint(); renderHitos(); render(); closeMenu();
+});
+document.getElementById("mExport").addEventListener("click", async () => {
+  const data = JSON.stringify({app:"mesa-de-loteos", version:3, texts:STORE.texts, projects:STORE.projects}, null, 2);
+  try { await saveDownload({filename:"mesa-de-loteos-respaldo.json", data, type:"application/json;charset=utf-8"}); say("Respaldo guardado."); }
+  catch(err){ say(err && err.code === "declined" ? "Descarga cancelada." : "No se pudo guardar el respaldo."); }
+});
+document.getElementById("mImport").addEventListener("click", () => document.getElementById("fileImport").click());
+document.getElementById("fileImport").addEventListener("change", e => {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const d = JSON.parse(r.result);
+      const list = Array.isArray(d) ? d : (d && d.projects);
+      if (!Array.isArray(list) || !list.length) throw 0;
+      const nuevos = list.filter(p => p && p.state).map(p => ({id: uid(), state: normalizeProjectState(p.state)}));
+      if (!nuevos.length) throw 0;
+      if (d && d.texts && typeof d.texts === "object"){
+        STORE.texts = Object.assign({}, STORE.texts, d.texts);
+        TX = Object.assign({}, TEXT_DEF, STORE.texts); applyTexts();
+      }
+      STORE.projects = STORE.projects.concat(nuevos);
+      setActive(nuevos[0].id);
+      say(`Se importaron ${nuevos.length} proyecto(s).`);
+    } catch(err){ say("El archivo no tiene el formato de un respaldo válido."); }
+    e.target.value = "";
+  };
+  r.readAsText(f);
+});
+document.getElementById("mCsv").addEventListener("click", async () => {
+  const D = window.__D;
+  const rows = [["Mes","Lotes vendidos","Lotes acumulados","Pies","Cuotas fijas","Recaudacion","Comercializacion","Aportante","Obras","Flujo neto","Caja acumulada"].join(";")];
+  for (let m = 1; m <= D.H; m++)
+    rows.push([m, D.vendidos[m].toFixed(2).replace(".",","), D.acumLotes[m].toFixed(2).replace(".",","),
+      Math.round(D.pies[m]), Math.round(D.cuotas[m]), Math.round(D.rec[m]), Math.round(-D.egCom[m]),
+      Math.round(-D.egProp[m]), Math.round(-D.egObra[m]), Math.round(D.neto[m]), Math.round(D.caja[m])].join(";"));
+  try { await saveDownload({filename:`flujo-${(S.nombre||"proyecto").replace(/[^\w\-]+/g,"-").toLowerCase()}.csv`, data:"﻿"+rows.join("\n"), type:"text/csv;charset=utf-8"}); say("Archivo guardado."); }
+  catch(err){
+    const c = err && err.code;
+    say(c === "declined" ? "Descarga cancelada."
+      : c === "extension_not_enabled" ? "Los .csv no están habilitados en esta vista. Usa “Copiar flujo al portapapeles”."
+      : "No se pudo guardar el archivo. Usa “Copiar flujo al portapapeles”.");
+  }
+});
+document.getElementById("mCopy").addEventListener("click", async e => {
+  const Ds = window.__Ds;
+  const lines = [];
+  Ds.forEach(({e:E, D}) => {
+    lines.push(`ESCENARIO ${E.label.toUpperCase()}\tvelocidad ${D.velLotes.toFixed(2)} lotes/mes\tPVP ${Math.round(D.pvp)}`);
+    lines.push(["Mes","Lotes vendidos","Lotes acumulados","Pies","Cuotas fijas","Recaudacion","Comercializacion","Aportante","Obras","Flujo neto","Caja acumulada"].join("\t"));
+    for (let m = 1; m <= D.H; m++)
+      lines.push([m, D.vendidos[m].toFixed(2), D.acumLotes[m].toFixed(2), Math.round(D.pies[m]), Math.round(D.cuotas[m]),
+        Math.round(D.rec[m]), Math.round(-D.egCom[m]), Math.round(-D.egProp[m]), Math.round(-D.egObra[m]),
+        Math.round(D.neto[m]), Math.round(D.caja[m])].join("\t"));
+    lines.push("");
+  });
+  try { await navigator.clipboard.writeText(lines.join("\n")); say("Flujo copiado: pégalo en Excel con Ctrl+V."); }
+  catch(err){ say("El navegador bloqueó el portapapeles. Usa “Descargar flujo (.csv)”."); }
+});
+
+let rt;
+window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(render, 140); });
+
+function normalizedStore(data){
+  if (!data || typeof data !== "object" || !Array.isArray(data.projects) || !data.projects.length) return null;
+  const projects = data.projects
+    .filter(project => project && project.id && project.state)
+    .map(project => ({id:String(project.id), state:normalizeProjectState(project.state)}));
+  if (!projects.length) return null;
+  return {
+    projects,
+    activeId:projects.some(project => project.id === data.activeId) ? data.activeId : projects[0].id,
+    unit:data.unit === "UF" ? "UF" : "CLP",
+    railHidden:!!data.railHidden,
+    texts:data.texts && typeof data.texts === "object" ? clone(data.texts) : {}
+  };
+}
+function replaceStore(data){
+  const next = normalizedStore(data);
+  if (!next) return false;
+  const localActiveId = STORE.activeId;
+  const localUnit = UNIT;
+  const localRailHidden = STORE.railHidden;
+  if (next.projects.some(project => project.id === localActiveId)) next.activeId = localActiveId;
+  next.unit = localUnit;
+  next.railHidden = localRailHidden;
+  suppressNextCloudSave = true;
+  STORE = next;
+  UNIT = STORE.unit;
+  TX = Object.assign({}, TEXT_DEF, STORE.texts);
+  S = active().state;
+  ESC_SEL = "base";
+  setRail(STORE.railHidden);
+  paint();
+  renderHitos();
+  render();
+  return true;
+}
+function cloudStore(data = STORE){
+  const normalized = normalizedStore(data);
+  if (!normalized) return null;
+  return {
+    projects:clone(normalized.projects),
+    texts:clone(normalized.texts)
+  };
+}
+function useMesaWorkspace(workspaceId){
+  const safeId = String(workspaceId || "principal").replace(/[^a-z0-9_-]/gi, "-");
+  LSKEY = "mesaLoteos.v2." + safeId;
+  clearTimeout(saveT);
+  loadStore();
+  setRail(STORE.railHidden);
+  paint();
+  renderHitos();
+  render();
+}
+function applyMesaAccess(access = window.VICAPER_ACCESS){
+  if (!document.body || !access) return;
+  const readOnly = !access.canEdit;
+  document.body.classList.toggle("mesa-readonly", readOnly);
+  const selectors = [
+    ".rail input", ".rail select", ".rail button",
+    "#priceListPanel input", "#priceListPanel button:not(.price-reference-toggle)",
+    "#btnNew", "#btnDup", "#btnDel", "#mCfg", "#mImport", "#mReset",
+    "#cfgBody input", "#cfgBody textarea", "#cfgReset"
+  ];
+  document.querySelectorAll(selectors.join(",")).forEach(control => { control.disabled = readOnly; });
+}
+window.VICAPER_MESA_API = {
+  getData:() => clone(STORE),
+  getCloudData:() => cloudStore(STORE),
+  normalizeCloudData:data => cloudStore(data),
+  replaceData:data => replaceStore(clone(data)),
+  useWorkspace:useMesaWorkspace,
+  applyAccess:applyMesaAccess
+};
+window.addEventListener("vicaper-access-ready", event => applyMesaAccess(event.detail));
+if (window.VICAPER_ACCESS) applyMesaAccess(window.VICAPER_ACCESS);
+window.dispatchEvent(new CustomEvent("vicaper-mesa-ready"));
+
+loadStore();
+setRail(STORE.railHidden);
+paint(); renderHitos(); setUnit(UNIT);
+</script>
+<a id="demoLocalGuide" href="guia.html">Demo local · Ver recorrido</a></body></html>
